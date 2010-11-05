@@ -1,0 +1,28 @@
+#!/bin/bash
+# unsubversion
+# Recursively deletes folders named .svn in a given dir
+# Created: Thu Dec 1 03:53:35 MST 2005
+# Author: Matthew Thorley
+# Ideas: 
+#   Add are you sure delete in dir 'dirname'?
+#   Add ask for each or no ask option?
+#   Add recursive/nonrecursive option
+#
+# Usage: unsubversion [dir]
+
+
+# If no dir is given use . as default
+if [ "$1" = "" ];then
+    DIR="."
+else
+    DIR=$1
+fi
+
+# Check that the dir exists and is a dir
+if [ ! -d "$DIR" ];then
+    echo "File $DIR does not exist or is not a directory."
+    exit 1
+fi
+
+# Recursively delete all dirs named '.svn' in $DIR
+for i in $(find $DIR -type d -name .svn); do rm -Rf $i; done

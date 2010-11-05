@@ -1,0 +1,5 @@
+#!/bin/bash
+if [[ -z "$1" ]];then echo "Usage: merge some-hive-branch"; exit 1; fi
+BRANCH_START=$(svn log --stop-on-copy $hive/$1 |grep r[0-9] |tail -n1 |sed -E "s/r([0-9]+).*/\\1/")
+svn merge -r$BRANCH_START:HEAD $hive/"$@" 
+

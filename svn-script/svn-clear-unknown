@@ -1,0 +1,2 @@
+#!/bin/sh
+for file in "$(svn st |grep ^? |cut -c9-)";do rm -rf $file; done

@@ -1,0 +1,27 @@
+#!/bin/bash
+# rmpyc
+# Recursively deletes files with the extension .pyc
+# Created: Thu Dec 2 03:53:35 MST 2005
+# Author: Matthew Thorley
+# Ideas: 
+#   Add recursive/nonrecursive option
+#
+# Usage: rmpyc [dir]
+
+
+# If no dir is given use . as default
+if [ "$1" = "" ];then
+    DIR="."
+else
+    DIR=$1
+fi
+
+# Check that the dir exists and is a dir
+if [ ! -d "$DIR" ];then
+    echo "File $DIR does not exist or is not a directory."
+    exit 1
+fi
+
+# Recursively delete all files matching *.pyc in $DIR
+find $DIR -type f -name '*.pyc' -exec rm {} \;
+

@@ -1,0 +1,15 @@
+#!/bin/bash
+# Quick creates new svn branch by doing local copy of trunk and then svn sw
+
+repo=http://svn.miningbased.com/svn/hive
+dir=/home/developer/sandbox/hive
+branch_dir=$dir/branches/$1
+
+if [[ -z $1 ]];then echo "Usage: branch branch-name"; exit 1; fi
+if [[ $(svn ls $repo/branches/$1 2>/dev/null) != '' ]];then echo "Svn branch $1 already exists!"; exit 1; fi
+if [[ -d $branch_dir ]];then echo "Dir $branch_dir already exists!"; exit 1; fi
+
+svn cp $repo/trunk $repo/branches/$1 -m "New branch $1"
+cp -r $dir/trunk $branch_dir
+cd $branch_dir
+svn sw $repo/branches/$1

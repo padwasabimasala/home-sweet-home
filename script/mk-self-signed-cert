@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+# Create a self signed certificate
+# http://www.tc.umn.edu/~brams006/selfsign.html
+
+import sys
+from subprocess import call
+
+KEY_DIR = '/etc/ssl/private'
+CRT_DIR = '/etc/ssl/certs'
+CSR_DIR = '/tmp'
+KEY_LENGTH = 4096
+CRT_DAYS = 365
+
+
+def _call_wrapper(args):
+  try:
+    return call(args)
+  except KeyboardInterrupt:
+    sys.exit(130)
+
+def create_key(key_path, length=KEY_LENGTH, secure_key=False):
+  cmd = "openssl genrsa%s -out %s %s" % ( ' -des3' if secure_key else '', key_path, length)
+  return _call_wrapper(cmd.split(' '))
+
+def create_csr(key_path, csr_path):
+  cmd = "openssl req -new -key %s -out %s" % (key_path, csr_path)
+  return _call_wrapper(cmd.split(' '))
+
+def create_crt(key_path, csr_path, crt_path, days=CRT_DAYS):
+  cmd = "openssl x509 -req -days %s -in %s -signkey %s -out %s" % (days, csr_path, key_path, crt_path)
+  return _call_wrapper(cmd.split(' '))
+
+
+if __name__ == '__main__':
+  import sys
+  from optparse import OptionParser
+
+  def _joinpath(dir, name, ext):
+    if dir[-1] == '/': dir = dir[:-1]
+    return "%s/%s.%s" % (dir, name, ext)
+
+  parser = OptionParser(usage="usage: %prog [options] server_name")
+  parser.add_option('', '--key-dir', dest='key_dir', default=KEY_DIR)
+  parser.add_option('', '--csr-dir', dest='csr_dir', default=CSR_DIR)
+  parser.add_option('', '--crt-dir', dest='crt_dir', default=CRT_DIR)
+  parser.add_option('', '--use-cwd', dest='use_cwd', default=False, action='store_true', help='Write all files to cwd')
+  parser.add_option('', '--key-len', dest='key_length', default=KEY_LENGTH)
+  parser.add_option('', '--days', dest='days', default=CRT_DAYS)
+  parser.add_option('', '--secure-key', dest='secure_key', default=False, action='store_true')
+  parser.add_option('', '--no-sign', dest='sign_cert', default=True, action='store_false')
+  (opts, args) = parser.parse_args()
+
+  if len(args) != 1:
+    sys.stderr.write(parser.usage + '\n')
+    sys.exit(1)
+  server_name = args[0]
+
+  if opts.use_cwd:
+    import os
+    cwd = os.getcwd()
+    opts.key_dir, opts.csr_dir, opts.crt_dir = cwd, cwd, cwd
+
+  key_path = _joinpath(opts.key_dir, server_name, 'key')
+  retval = create_key(key_path, opts.key_length, opts.secure_key)
+  if retval:
+    sys.stderr.write("Err: Could not create key\n")
+    sys.stderr.write("You may need to clean up %s\n" % key_path)
+    sys.exit(retval)
+
+  csr_path = _joinpath(opts.csr_dir, server_name, 'csr')
+  retval = create_csr(key_path, csr_path)
+  if retval:
+    sys.stderr.write("Err: Could not create certificate signing request\n")
+    sys.stderr.write("You may need to clean up %s and/or %s\n" % (key_path, csr_path))
+    sys.exit(retval)
+
+  if not opts.sign_cert: sys.exit(0)
+  crt_path = _joinpath(opts.crt_dir, server_name, 'crt')
+  retval = create_crt(key_path, csr_path, crt_path, opts.days)
+  if retval:
+    sys.stderr.write("Err: Could not create sign certificate signing request\n")
+    sys.stderr.write("You may need to clean up %s and/or %s and/or %s\n" % (key_path, csr_path, crt_path))
+    sys.exit(retval)
+
+

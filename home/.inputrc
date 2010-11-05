@@ -1,0 +1,10 @@
+set bell-style off
+# hit tab once (not twice) to show all combinations
+set show-all-if-ambiguous on
+set editing-mode vi
+# editing mode is enough, don't set keymap
+#set keymap vi
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+#set editing-mode emacs
+#set keymap emacs

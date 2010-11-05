@@ -1,0 +1,2 @@
+#!/bin/sh
+for file in $(svn st |grep ^M |cut -c9-); do svn revert $file; done

@@ -1,0 +1,15 @@
+startup_message off
+termcapinfo rxvt* 'hs:ts=\E]2;:fs=\007:ds=\E]2;\007'
+termcapinfo rxvt* ti@:te@
+hardstatus string "screen (%n: %t)"
+defscrollback 10000
+caption string "%{= kw}%Y-%m-%d;%c %{= kw}%-Lw%{= kG}%{+b}[%n %t]%{-b}%{= kw}%+Lw%1`"
+caption always
+shell -/bin/bash
+defbce on
+vbell off
+
+screen -t  MUTT 1 mutt
+split -v
+focus
+screen -t IRC 0 irssi

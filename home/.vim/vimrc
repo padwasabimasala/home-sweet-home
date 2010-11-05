@@ -1,0 +1,70 @@
+set nocompatible
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Resources
+"
+" http://rayninfo.co.uk/vimtips.html
+" http://bbs.archlinux.org/viewtopic.php?pid=384883#p384883
+" http://www.stripey.com/vim/vimrc.html
+" http://github.com/hashrocket/dotmatrix/blob/master/.vimrc
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Notes 
+"
+" map:  normal and visual mode
+" map!: insert and cmd-line mode
+" imap: insert mode
+" vmap: visual mode
+"
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+if filereadable("/etc/vim/vimrc")
+  "source /etc/vim/vimrc
+endif
+" Tell vim it's in a 256 color terminal
+if &term =~# '^\(screen\|xterm\)$'
+  set t_Co=256
+endif
+
+syntax on
+set backspace=2   
+set ts=2
+set sw=2
+set sts=2
+set expandtab " Convert tabs to spaces
+set autoindent
+set ignorecase
+set smartcase " overrides ignorecase if uppercase used in search string
+set lbr " wrap on spaces not hard wrap
+set bg=dark
+set showmode
+set showcmd
+set hls " Highlight search
+set history=50
+colorscheme elflord
+
+" Let \ clear the search highlighting
+map <silent> \ :let @/=""<cr>
+" Let H toggle highlighting
+map <silent> H :set hls!<CR>
+
+" remap j and k so that they move one screen line even when file lines wrap
+noremap j gj
+noremap k gk
+
+" Map jj to <Esc> during insert mode
+imap jj 
+inoremap kj <Esc>
+
+" remember between sessions, but only 10 search terms; also
+" remember info for 10 files, but never any on removable disks, don't remember
+" marks in files, don't rehighlight old search patterns, and only save up to
+" 100 lines of registers; including @10 in there should restrict input buffer
+" but it causes an error for me:
+set viminfo=/10,'10,r/mnt/zip,r/mnt/floppy,f0,h,\"100
+
+" Don't clear the screen when closing. Try :norestorescreen on Win32
+" http://vieditor.tribe.net/thread/c0cb220e-4957-4a67-a465-ef7c74cf497a
+" :set t_ti= t_te=
+
+" smart indention for *.py files http://py.vaults.ca/~x/python_and_vim.html
+autocmd BufRead *.py set smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class

@@ -1,0 +1,5 @@
+#!/bin/bash
+GREP_CMD="grep --color --exclude-dir .svn -R "
+Args=($@)
+if [[ ${#Args[@]} == 1 ]]; then $GREP_CMD $1 *; else $GREP_CMD $@; fi
+

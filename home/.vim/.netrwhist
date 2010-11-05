@@ -1,0 +1,8 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =6
+let g:netrw_dirhist_1='/attic/sandbox/hive/config/env'
+let g:netrw_dirhist_2='/attic/sandbox/hive/lib/crawler/test/eula'
+let g:netrw_dirhist_3='/attic/sandbox/hive/lib/dashboard'
+let g:netrw_dirhist_4='/attic/sandbox/rwc/pages'
+let g:netrw_dirhist_5='/attic/sandbox/hive/log'
+let g:netrw_dirhist_6='/attic/sandbox/hive/config/env'

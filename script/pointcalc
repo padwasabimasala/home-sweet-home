@@ -1,0 +1,19 @@
+#!/opt/local/bin/python2.5
+# Simple weight watchers calculator
+import sys
+
+
+def min(max, x):
+  if x > max: return x
+  return max
+
+def calculate_points(cals, fat, fiber):
+  return (cals/50) + (fat/12) - (min(4, fiber)/5)
+  
+if __name__ == '__main__':
+  if len(sys.argv) != 4:
+    sys.exit("Usage: pointcalc calories fat-grams fiber-grams")
+  cals, fat, fiber = map(int, sys.argv[1:])
+  pnts = calculate_points(cals, fat, fiber)
+  print "Calories: %s Fat: %s Fiber: %s\nPoints: %s" %(cals, fat, fiber, pnts)
+  

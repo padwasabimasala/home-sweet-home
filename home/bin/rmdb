@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+# Quickly drops and user and the related database
+#
+# DROP User and DB commands
+# REVOKE ALL PRIVILEGES ON * . * FROM 'mthorley'@ 'localhost';
+# REVOKE ALL PRIVILEGES ON `mthorley_db` . * FROM 'mthorley'@ 'localhost';
+# DROP USER 'mthorley'@ 'localhost';
+# DROP DATABASE `mthorley`
+
+import sys, string, os
+
+if __name__ == '__main__':
+  usage = "%s: dname [dbuser] [from_host]\n* default dbuser = dbname\n* default from_host = localhost\n"
+  argcnt = len(sys.argv)
+  if argcnt == 1:#Print usage if not enough args
+    sys.stderr.write(usage %sys.argv[0])
+    sys.exit(1)
+  
+  #Default dbuser = dbname
+  dbname = dbuser = sys.argv[1]
+  if argcnt > 2:
+    dbuser = sys.argv[2]
+  #Default host is localhost
+  from_host = 'localhost'
+  if argcnt > 3:
+    from_host = sys.argv[3]
+
+  #Creates the database, creates the user, grants privs to user on database
+  sql_template = string.Template("REVOKE ALL PRIVILEGES ON * . * FROM '${dbuser}'@'${from_host}'; REVOKE ALL PRIVILEGES ON ``${dbname}`` . * FROM '${dbuser}'@'${from_host}'; DROP USER '${dbuser}'@'${from_host}'; DROP DATABASE ``${dbname}``;")
+  
+  sqlcmd = sql_template.substitute(locals())
+  os.system("mysql -u root -p --exec=\"%s\"" % sqlcmd)

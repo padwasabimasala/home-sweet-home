@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+# Open each file name passed in, collect the col names, output as one csv with all cols
+# Usage: csvcat f1.csv f2.csv f3.csv > f1-3_combined.csv
+
+require 'rubygems'
+require 'csv-mapper'
+require 'fastercsv'
+
+if __FILE__ == $0 
+
+  all_cols = {}
+  all_rows = []
+
+  ARGV.each do |fname|
+    rows = CsvMapper.import(fname) do
+      read_attributes_from_file
+    end
+    col_names = rows.first.public_methods(nil).collect{|a| a if a.slice(-1,1) != '='}.compact.sort
+
+    col_names.each {|name| all_cols[name] ||= true}
+
+    rows.each do |row|
+      row_as_hsh = {}
+      col_names.each do |name|
+        value = row.send name.to_sym
+        row_as_hsh[name] = value
+      end
+      all_rows << row_as_hsh
+    end
+
+  end
+
+  csv = FCSV.new(STDOUT)
+
+  sorted_cols = all_cols.keys.sort
+  csv << sorted_cols
+
+  all_rows.each do |row|
+    sorted_row = []
+    sorted_cols.each do |name|
+      val = row[name]
+      sorted_row << val ? val : ''
+    end
+    csv << sorted_row
+  end 
+
+end
+
+
+
