@@ -1,5 +1,5 @@
 
-  H O M E   S W E E T   H O M E
+  H O M E - S W E E T - H O M E
 
 <pre>
     ) )        /\
