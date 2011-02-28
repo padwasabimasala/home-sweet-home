@@ -274,3 +274,6 @@ if [[ `hostname` == mrt ]]; then
   mb_logins
 fi
 
+if ! test -z $(which gnome-open); then 
+  alias open=gnome-open
+fi
