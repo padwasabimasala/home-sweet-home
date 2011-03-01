@@ -1,0 +1,12 @@
+[user]
+	name = Matthew Thorley
+	email = padwasabimasala on gmail
+[alias]
+  st = status
+  ci = commit
+  cam = commit -am
+  br = branch
+  co = checkout
+  df = diff --color
+  dfc = diff --color --cached
+  lg = log -p
