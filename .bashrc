@@ -10,7 +10,7 @@ export HISTIGNORE="&:[ ]*:exit"
 
 # http://www.oreillynet.com/onlamp/blog/2007/01/whats_in_your_bash_history.html
 # posterity demmands a long history ;) cut -f1 -d" " .bash_history | sort | uniq -c | sort -nr | head -n 30 
-export HISTFILESIZE=100000000
+export HISTFIysESIZE=100000000
 export HISTSIZE=100000000
 shopt -s histappend # append to history file, don't overwrite
 
@@ -71,13 +71,12 @@ alias rcreload="source ~/.bashrc"
 alias vimrcedit="vi ~/.vimrc"
 
 # Good old fasion laziness
-alias ls="ls --color"
-alias ls="ls -G --color"
-alias ll="ls -h -G -l --color"
-alias lla="ls -h -G -Al --color"
-alias la="ls -G -A --color"
-alias lt="ls -h  -G -lt --color"
-alias ltr="ls -h  -G -ltr --color"
+alias ls="ls -G "
+alias ll="ls -h -G -l "
+alias lla="ls -h -G -Al "
+alias la="ls -G -A "
+alias lt="ls -h  -G -lt "
+alias ltr="ls -h  -G -ltr "
 alias lsgrep="ls -al --color |grep " 
 
 alias ..="cd .."
