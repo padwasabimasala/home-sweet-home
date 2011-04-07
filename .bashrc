@@ -94,6 +94,7 @@ alias v=vi
 alias d="ls -G --color"
 alias r=ruby
 
+alias g='git'
 alias gco='git checkout'
 alias gcb='git checkout -b'
 alias gp='git pull'
@@ -130,6 +131,11 @@ function goog {
 function _mv {
   mv $1 _$1
 }
+
+function _cp {
+  cp $1 _$1
+}
+
 
 function mcd {
   mkdir $1; cd $1
@@ -276,3 +282,5 @@ fi
 if ! test -z $(which gnome-open); then 
   alias open=gnome-open
 fi
+
+if [[ -s /Users/$USER/.rvm/scripts/rvm ]] ; then source /Users/$USER/.rvm/scripts/rvm ; fi
