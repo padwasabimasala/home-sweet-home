@@ -4,4 +4,4 @@ if test ${#@} -eq 1; then
 else 
   DIRS="${@:2:100}" 
 fi
-find $DIRS -name \*$1\*
+find $DIRS -iname \*$1\*
