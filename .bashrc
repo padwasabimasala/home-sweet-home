@@ -71,6 +71,12 @@ alias rcreload="source ~/.bashrc"
 alias vimrcedit="vi ~/.vimrc"
 
 # Good old fasion laziness
+alias l="ls -G"
+alias v=vi
+alias d="rm -rf"
+alias r=ruby
+alias c="cp -r"
+
 alias ls="ls -G "
 alias ll="ls -h -G -l "
 alias lla="ls -h -G -Al "
@@ -87,14 +93,8 @@ alias cp='cp -r '
 alias scp='scp -r '
 alias rm="rm -f "
 alias del="rm -Rf "
-alias autotest="echo Try at instead"
 alias at=/usr/bin/autotest
 
-alias v=vi
-alias d="ls -G --color"
-alias r=ruby
-
-alias g='git'
 alias gco='git checkout'
 alias gcb='git checkout -b'
 alias gp='git pull'
@@ -118,6 +118,7 @@ alias clear="clear;echo [0m;"
 
 alias tf='tail -f '
 alias ssh='ssh -X '
+alias gi="gem install --no-rdoc --no-ri"
 
 if [[ $(which ipython) ]]; then alias ipy=ipython; fi
 
