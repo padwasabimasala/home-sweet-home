@@ -119,6 +119,7 @@ alias clear="clear;echo [0m;"
 alias tf='tail -f '
 alias ssh='ssh -X '
 alias gi="gem install --no-rdoc --no-ri"
+alias bi='bundle install'
 
 if [[ $(which ipython) ]]; then alias ipy=ipython; fi
 

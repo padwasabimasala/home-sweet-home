@@ -10,3 +10,4 @@
   df = diff --color
   dfc = diff --color --cached
   lg = log -p
+  rh = reset --hard
