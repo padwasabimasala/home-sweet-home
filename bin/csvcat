@@ -13,8 +13,15 @@ if __FILE__ == $0
 
   ARGV.each do |fname|
     rows = CsvMapper.import(fname) do
-      read_attributes_from_file
+      begin
+        read_attributes_from_file
+      rescue NoMethodError
+        STDERR.puts fname
+        nil
+      end
     end
+    next if !rows
+
     col_names = rows.first.public_methods(nil).collect{|a| a if a.slice(-1,1) != '='}.compact.sort
 
     col_names.each {|name| all_cols[name] ||= true}
