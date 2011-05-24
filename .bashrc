@@ -293,10 +293,10 @@ fi
 if [[ -s /Users/$USER/.rvm/scripts/rvm ]] ; then source /Users/$USER/.rvm/scripts/rvm ; fi
 
 function q {
-  USER=$(grep ono-leads-db .authinfo| awk '{print $2}') 
-  PASS=$(grep ono-leads-db .authinfo| awk '{print $3}') 
-  HOST=$(grep ono-leads-db .authinfo| awk '{print $4}') 
-  DB=$(grep ono-leads-db .authinfo| awk '{print $5}') 
+  USER=$(grep ono-leads-db ~/.authinfo| awk '{print $2}') 
+  PASS=$(grep ono-leads-db ~/.authinfo| awk '{print $3}') 
+  HOST=$(grep ono-leads-db ~/.authinfo| awk '{print $4}') 
+  DB=$(grep ono-leads-db ~/.authinfo| awk '{print $5}') 
   SQL="$@"
   mysql -h$HOST -u$USER -p$PASS $DB -e "$SQL"
 }
