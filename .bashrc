@@ -205,6 +205,21 @@ extract () {
      echo "'$1' is not a valid file!"
   fi
 }
+
+filter () {
+   PTRN=$1
+   shift
+   ARGC=$#
+
+   CMD="grep $PTRN --color=always -R ."
+   i=1
+   while [ $i -le $ARGC ]; do
+     CMD="$CMD |grep -v ${!i}"
+     i=$((i+1))
+   done
+   CMD="$CMD |grep $PTRN |less -R"
+   eval $CMD
+}
    
 
 function findreplace {
