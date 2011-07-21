@@ -3,6 +3,8 @@
 # - http://github.com/logankoester/irbrc/blob/master/irbrc
 # - http://github.com/greatseth/dotfiles/blob/master/irbrc
 
+Dir.glob(File.expand_path(File.dirname __FILE__) + "/.gem/gems/*").each {|p| $: << p}
+
 require 'rubygems'
 require 'irb/completion'
 require 'irb/ext/save-history'
@@ -17,6 +19,7 @@ IRB.conf[:PROMPT_MODE] = :SIMPLE
 IRB.conf[:AUTO_INDENT] = true
 
 Wirble.init
+Wirble.colorize
 
 class Object
   def my_methods
@@ -30,4 +33,6 @@ class Object
   end
 end
 
-
+def dir(obj)
+  (obj.methods - Object.public_instance_methods).sort
+end
