@@ -220,8 +220,11 @@ filter () {
    CMD="$CMD |grep $PTRN |less -R"
    eval $CMD
 }
-   
 
+gh () { # Grep Bash History
+  grep $@ ~/.bash_history
+}
+   
 function findreplace {
   usage="findreplace findstr replacestr file [file...]" 
   if [ $# -lt 2 ]; then
@@ -306,6 +309,13 @@ if ! test -z $(which gnome-open); then
 fi
 
 if [[ -s /Users/$USER/.rvm/scripts/rvm ]] ; then source /Users/$USER/.rvm/scripts/rvm ; fi
+
+# http://machine-cycle.blogspot.com/2007/10/syntax-highlighting-pager.html
+if [[ -s /usr/share/vim/vim72/macros/less.sh ]]; then 
+  - () {
+   /usr/share/vim/vim72/macros/less.sh "$*"
+  }
+fi
 
 function q {
   USER=$(grep ono-leads-db ~/.authinfo| awk '{print $2}') 
