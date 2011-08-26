@@ -11,3 +11,5 @@
   dfc = diff --color --cached
   lg = log -p
   rh = reset --hard
+[core]
+	editor = /usr/bin/vim
