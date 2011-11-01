@@ -117,9 +117,9 @@ alias psme='ps aux|grep `whoami`'
 alias clear="clear;echo [0m;"
 
 alias tf='tail -f '
-alias ssh='ssh -X '
 alias gi="gem install --no-rdoc --no-ri"
 alias bi='bundle install'
+alias lp='lp -o cpi=14 -o lpi=10'
 
 if [[ $(which ipython) ]]; then alias ipy=ipython; fi
 
@@ -221,7 +221,7 @@ filter () {
    eval $CMD
 }
 
-gh () { # Grep Bash History
+hg () { # Grep Bash History
   grep $@ ~/.bash_history
 }
    
