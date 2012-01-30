@@ -119,7 +119,10 @@ alias clear="clear;echo [0m;"
 alias tf='tail -f '
 alias gi="gem install --no-rdoc --no-ri"
 alias bi='bundle install'
-alias lp='lp -o cpi=14 -o lpi=10'
+alias print='lp -o cpi=14 -o lpi=10'
+alias wl='wc -l'
+alias h1='head -n1'
+alias h10='head -n10'
 
 if [[ $(which ipython) ]]; then alias ipy=ipython; fi
 
@@ -133,6 +136,10 @@ function goog {
 function app {
   #http://www.hccp.org/command-line-os-x.html
   open -a /Applications/$1.app $2
+}
+
+function prepend {
+  mv $1 "$2$1"
 }
 
 function _mv {
@@ -308,8 +315,6 @@ if ! test -z $(which gnome-open); then
   alias open=gnome-open
 fi
 
-if [[ -s /Users/$USER/.rvm/scripts/rvm ]] ; then source /Users/$USER/.rvm/scripts/rvm ; fi
-
 # http://machine-cycle.blogspot.com/2007/10/syntax-highlighting-pager.html
 if [[ -s /usr/share/vim/vim72/macros/less.sh ]]; then 
   - () {
@@ -318,13 +323,66 @@ if [[ -s /usr/share/vim/vim72/macros/less.sh ]]; then
 fi
 
 function q {
-  USER=$(grep ono-leads-db ~/.authinfo| awk '{print $2}') 
-  PASS=$(grep ono-leads-db ~/.authinfo| awk '{print $3}') 
-  HOST=$(grep ono-leads-db ~/.authinfo| awk '{print $4}') 
-  DB=$(grep ono-leads-db ~/.authinfo| awk '{print $5}') 
+  USER=$(grep ono-leads-db1 ~/.authinfo| awk '{print $2}') 
+  PASS=$(grep ono-leads-db1 ~/.authinfo| awk '{print $3}') 
+  HOST=$(grep ono-leads-db1 ~/.authinfo| awk '{print $4}') 
+  DB=$(grep ono-leads-db1 ~/.authinfo| awk '{print $5}') 
   SQL="$@"
   mysql -h$HOST -u$USER -p$PASS $DB -e "$SQL"
 }
 
+function qsh {
+  USER=$(grep ono-leads-db1 ~/.authinfo| awk '{print $2}') 
+  PASS=$(grep ono-leads-db1 ~/.authinfo| awk '{print $3}') 
+  HOST=$(grep ono-leads-db1 ~/.authinfo| awk '{print $4}') 
+  DB=$(grep ono-leads-db1 ~/.authinfo| awk '{print $5}') 
+  SQL="$@"
+  mysql -h$HOST -u$USER -p$PASS $DB
+}
+
+function q2 {
+  USER=$(grep ono-leads-db2 ~/.authinfo| awk '{print $2}') 
+  PASS=$(grep ono-leads-db2 ~/.authinfo| awk '{print $3}') 
+  HOST=$(grep ono-leads-db2 ~/.authinfo| awk '{print $4}') 
+  DB=$(grep ono-leads-db2 ~/.authinfo| awk '{print $5}') 
+  SQL="$@"
+  mysql -h$HOST -u$USER -p$PASS $DB -e "$SQL"
+}
+
+function cq {
+  USER=$(grep classesa-ready-db ~/.authinfo| awk '{print $2}') 
+  PASS=$(grep classesa-ready-db ~/.authinfo| awk '{print $3}') 
+  HOST=$(grep classesa-ready-db ~/.authinfo| awk '{print $4}') 
+  DB=$(grep classesa-ready-db ~/.authinfo| awk '{print $5}') 
+  SQL="$@"
+  mysql -h$HOST -u$USER -p$PASS $DB -e "$SQL"
+}
 export DYLD_LIBRARY_PATH=/usr/local/mysql/lib:$DYLD_LIBRARY_PATH;
 export PATH=$PATH:/usr/local/mysql/bin
+
+# Set up RVM 
+[[ -s "/Users/mthorley/.rvm/scripts/rvm" ]] && source "/Users/mthorley/.rvm/scripts/rvm" 
+
+alias lpip="ssh leads-prod-intake-portal"
+alias lpiv="ssh leads-prod-intake-vendor"
+alias lpic="ssh leads-prod-intake-call"
+
+set_term_bgcolor(){
+  local R=$1
+  local G=$2
+  local B=$3
+  /usr/bin/osascript <<EOF
+tell application "iTerm"
+  tell the current terminal
+    tell the current session
+      set background color to {$(($R*65535/255)), $(($G*65535/255)), $(($B*65535/255))}
+    end tell
+  end tell
+end tell
+EOF
+}
+
+
+# NOTES
+# Prevent ssh host key checking by appending the line below to .ssh/config
+#   StrictHostKeyChecking no 
