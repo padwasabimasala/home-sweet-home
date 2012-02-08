@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+require 'date'
+ 
+USAGE = "date-range <start date> <end date>"
+
+HELP = <<EOS 
+Print the year month and day for all days in a date range.
+
+Usage: #{USAGE}
+
+Example:
+
+  $ date-range "Jan 1 2011" "Jan 3 2011"
+  2011 1 1
+  2011 1 2
+  2011 1 3
+EOS
+
+require 'rubygems'
+begin
+  require 'chronic'
+rescue LoadError
+  STDERR.puts "Chronic gem could not be loaded. Try 'sudo install gem chronic' or see http://chronic.rubyforge.org/"
+  exit 1
+end
+
+if ARGV.include?('-h') || ARGV.include?( '--help')
+  puts HELP
+  exit
+elsif ARGV.size != 2
+  STDERR.puts USAGE
+  exit 1
+end
+
+# http://rubyquicktips.tumblr.com/post/350625885/calculate-the-last-day-of-the-month
+# >> Date.civil(2010, 02, -1)
+# => Sun, 28 Feb 2010
+# >> Date.civil(2010, -1, -5)
+# => Mon, 27 Dec 2010
+
+startd = Chronic.parse ARGV.first
+endd = Chronic.parse ARGV.last
+
+(startd.year..endd.year).each do |year|
+  fm = (startd.year == year) ? startd.month : 1
+  lm = (endd.year == year) ? endd.month : 12
+  (fm..lm).each do |month|
+    fd = (startd.month == month) ? startd.day : 1
+    ld = (endd.month == month) ? endd.day : Date.civil(year, month, -1).day
+    (fd..ld).each do |day|
+      puts [year, month, day].join ' '
+    end
+  end
+end
+
+# require 'time'
+# start = Time.parse("2012-01-01").utc
+# stop = Time.parse("2012-02-08").utc
+# 
+# int = (60*60*24*2)
+# first,last = start,start + int
+# days = (stop - start) / int
+# 
+# (1..days).each do |i|
+#   f,l = first.strftime("%Y-%m-%d"), last.strftime("%Y-%m-%d")
+#   cmd = "some-cmd #{f} #{l}"
+#   job = fork do
+#     exec cmd
+#   end
+#   puts "started job #{job}"
+#   Process.detach(job)
+# 
+#   sleep 1
+#   puts cmd
+# 
+#   first = last
+#   last = first + int
+# end
