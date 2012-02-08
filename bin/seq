@@ -1,0 +1,2 @@
+#!/usr/bin/env ruby
+(ARGV.first..ARGV.last).each {|i| puts i}

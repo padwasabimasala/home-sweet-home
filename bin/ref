@@ -1,0 +1,347 @@
+#!/usr/bin/env perl -w
+# Find a Biblical reference given chapter and verse(s) and/or a pattern
+#
+
+use strict;
+
+sub get_book($$);
+
+(my $myname = $0) =~ s|(.*/)*||;   # strip path component from name
+my $Usage = <<'END';
+bible-ref: a program to look up Bible references and search for verses.
+Copyright (C) 1999 Martin Ward
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+Usage: ref [bible] [book] [chapter:[verse[-verse|,verse]]] {/pattern/in}*
+Look up verses in a bible.  You can specify any of the bible, book, chapter
+or a list or range of verse and/or one or more patterns.
+Environment Variables:	BIBLES	The directory where bible files are stores
+			BIBLE	The default bible file to search
+Examples:
+  ref John 3:16		print this famous verse
+  ref all John 3:16	print this verse from every available bible
+  ref jn 3:		print all of chapter 3 of John's gospel
+  ref 3:16		list chapter 3 verse 16 in each book that has one
+  ref 3 john		print a whole book
+  ref 3 john 2		some books don't have chapter divisions
+  ref AV 1 jn /Jesus/	list verses in 1 John in the AV which contain Jesus
+  ref RSV /Jesus wept/	find the shortest verse in the RSV!
+  ref /Adam/ /Eve/	list verses which mention both Adam and Eve
+  ref /adam/i		case-insensitive search, finds Adam, adamant etc.
+  ref RSV /baalmeon/in	finds the name Ba'al-me'on, ignoring the punctuation
+  ref			print the whole of the default bible
+
+Available bibles are: %%%
+Report bugs to: martin@gkc.org.uk
+END
+
+$SIG{PIPE} = 'IGNORE';
+
+my $help = "Try `ref --help' for more information.\n";
+
+my $lastverse = 176; 	# The largest possible verse number (Psalm 119:176)
+my $linelen = 78;	# Maximum line length
+
+# Abbreviations of book names in various languages:
+
+my %abbr = qw(gn genesis lv leviticus dt deuteronomy
+	      mt matthew mk mark lk luke jn john
+	      ss song ct song jud judges
+	      phil philippians jas james
+	      phlmn philemon philm philemon philmn philemon
+	      apg apostlag
+	     );
+
+grep { $abbr{"$_ jn"} = "$_ john" } (1..3);
+
+#$abbr{"1 mosebok"} = "genesis";
+#$abbr{"2 mosebok"} = "exodus";
+#$abbr{"3 mosebok"} = "leviticus";
+#$abbr{"4 mosebok"} = "numeri";
+#$abbr{"5 mosebok"} = "deuteronomium";
+grep { $abbr{"$_ mosebok"} = "$_ mos" } ((1..5));
+grep { $abbr{"$_ mosbok"} = "$_ mos" } ((1..5));
+grep { $abbr{"$_ moseb"} = "$_ mos" } ((1..5));
+grep { $abbr{"$_ mose"} = "$_ mos" } ((1..5));
+
+my %name2num = qw(första 1 andra 2 tredje 3 fjärde 4 femte 5);
+
+my $bibles = $ENV{'BIBLES'} || "$ENV{HOME}/.bibles/";
+my $bible  = $ENV{'BIBLE'}  || "ESV";
+
+my ($dos, $ds);
+
+if (($^O eq "solaris") || ($^O eq "darwin") || ($^O eq "linux")) {
+  # We are on a sensible operating system
+  $dos = 0;
+  $ds = "/";
+} elsif ($^O eq "MSWin32") {
+  # We are on a brain-dead operating system
+  $dos = 1;
+  $ds = "\\";
+} else {
+  #die "Unknown OS: $^O\n";
+}
+
+opendir(DIR, $bibles)
+  or die "Can't open bibles directory `$bibles': $!\n$help";
+my @bibles = sort grep { $_ ne "." && $_ ne ".." && !/\.dir$/ } readdir(DIR);
+closedir(DIR);
+my $names = join(", ", @bibles);
+$Usage =~ s/%%%/$names/;
+
+# Default options:
+my $book = "";		# Whole bible
+my $verse = "";		# Whole chapter
+my @patterns = ();	# Match everything
+
+# Options processing:
+my $option;
+my $pattern;
+my $patt;
+my $n;
+my @bible = ();
+while (@ARGV) {
+  $option = shift;
+  if ($option eq "--help") {
+    print $Usage;
+    exit(0);
+  } elsif ($option eq "all") {
+    @bible = @bibles;
+  } elsif (grep { ($option eq $_) || ("$option.gz" eq $_) } @bibles) {
+    push(@bible, $option) unless (grep { $_ eq $option } @bible);
+  } elsif ($option =~ /^([^0-9:-]+)(\d+(:[0-9,-]*)?)$/) {
+    # book and verse with no space:
+    unshift(@ARGV, $1, $2);
+  } elsif ($option =~ /^(\d+)([^0-9:-]+)(\d+((:[0-9,-]*)?|-\d+))$/) {
+    # book and verse with no space:
+    unshift(@ARGV, $1, $2, $3);
+  } elsif ($option =~ /^\d+(-\d+)?$/) {
+    if ($book) {
+      # Assume it is a verse reference (to a single-chapter book):
+      die $Usage if ($verse);
+      $verse = "1:$option";
+    } else {
+      # Assume it is the first part of a book name:
+      die $Usage unless(@ARGV);
+      $book = $option . " " . shift;
+    }
+  } elsif ($option =~ /^\d+:/) {
+    # Assume it is a chapter/verse reference:
+    die $Usage if ($verse);
+    $verse = $option;
+  } elsif ($option =~ m!^/!) {
+    $pattern = $option;
+    while ($pattern !~ m!^/.*/(i|n)*$! && @ARGV) {
+      $pattern .= " " . shift;
+    }
+    if ($pattern =~ s!/(i?)n(i?)$!/$1$2!) {
+      # A proper name: modify the pattern to skip punctuation:
+      $pattern =~ s!/(.*)/(i?)$!$1!;
+      my $end = $2;
+      $pattern =~ s/(.)/$1 . "[-']*"/ge;
+      $pattern = "/$pattern/$end";
+    }
+    die $Usage unless ($pattern =~ m!^/.*/i?$!);
+    # Allow spaces in the pattern to match punctuaution:
+    $pattern =~ s/\s+/\\W+/g;
+    push(@patterns, $pattern);
+  } else {
+    # Assume it is a book name:
+    # Special cases, Song of Solomon, Lamentations of Jeremiah
+    next if $book && ($option =~ /^(of|Songs|Solomon|Jeremiah)$/i);
+    die $Usage if ($book);
+    ($book = $option) =~ tr/A-Z/a-z/;
+    if ($name2num{$book} && @ARGV) {
+      $book .= " " . shift;
+      $book =~ tr/A-Z/a-z/;
+    }
+  }
+}
+
+$book = $abbr{$book} if ($book && $abbr{$book});
+
+# Convert the $verse reference to a pattern:
+my ($chapter, @verse, $vpatt);
+$vpatt = "";
+if ($verse ne "") {
+  die $Usage unless ($verse =~ s/^(\d+)://);
+  # Chapter number:
+  $vpatt = sprintf("%03d:", $1);
+  if ($verse eq "") {
+    @verse = ();
+  } elsif ($verse =~ /^(\d+)$/) {
+    # Single verse reference:
+    @verse = ($verse);
+    $vpatt .= sprintf("%03d", $2) if ($2);
+  } elsif ($verse =~ /^((\d+,)*\d*)$/) {
+    # List of verses from the chapter:
+    @verse = split(/,/, $verse);
+  } elsif ($verse =~ /^(\d+)--?(\d*)$/) {
+    # Range of verses from the chapter:
+    my $from = $1;
+    my $to = $2;
+    $to = $lastverse if (($to eq "") || ($to > $lastverse));
+    die $Usage unless ($from <= $to);
+    @verse = ($from..$to);
+  } else {
+    # Unknown verse format
+    die $Usage;
+  }
+  $vpatt .= "(" . join("|", map { sprintf("%03d", $_) } @verse) . ")"
+    if (@verse);
+  $vpatt =~ s/\((\d{3})\)/$1/;
+}
+
+@bible = ($bible) unless (@bible);
+foreach $bible (@bible) {
+
+  # Slurp in the whole text and extract the required book (if given):
+  $bible = "$bibles$ds$bible";
+  $bible .= ".gz" if (!-f $bible && -f "$bible.gz");
+  if ($bible =~ /\.gz$/) {
+    open(BIBLE, "gunzip < $bible|") or die "Can't read `$bible': $!\n";
+  } else {
+    open(BIBLE, $bible) or die "Can't read `$bible': $!\n";
+  }
+
+  if ($book) {
+    get_book($bible, $book);
+  } else {
+    local $/;
+    undef $/;
+    $_ = <BIBLE>;
+    close(BIBLE);
+    # Trim any initial stuff (eg Project Gutenberg header):
+    s/^.*?(Book \d\d)/$1/s;
+  }
+  
+  # Join up the verses to get one verse per line:
+  s/\cM//g;
+  s/\n+/\n/g;
+  s!\n\s+!//!g; # Preserve line breaks in poetry
+  
+  my @lines = split(/\n/, $_);
+  
+  $n = "00";
+  my %name = ();
+  foreach (@lines) {
+    if (/^Book (\d\d)\s/) {
+      $n = $1;
+      $name{$n} = $_;
+      $_ = "";
+    } else {
+      $_ = "$n:$_";
+    }
+  }
+  
+  # Extract the required verse(s):
+  if ($vpatt ne "") {
+    @lines = grep { /^\d\d:$vpatt/ } @lines;
+  }
+  
+  foreach $patt (@patterns) {
+    $pattern = $patt;
+    if ($pattern =~ s!/(.*)/i$!$1!) {
+      @lines = grep { /$pattern/i } @lines;
+    } elsif ($pattern =~ s!/(.*)/$!$1!) {
+      @lines = grep { /$pattern/ } @lines;
+    } else {
+      die $Usage;
+    }
+  }
+
+  $bible =~ s/^$bibles$ds//;
+  print "$bible\n" if (@bible > 1);
+  
+  $_ = join("\n", @lines);
+  s/^\n+//;
+  s!//!\n\t!g; # Restore line breaks in poetry
+  @lines = split(/\n/, $_);
+  
+  my ($word, $left);
+  $n = "00";
+  foreach $_ (@lines) {
+    if (s/^(\d\d):// && $1 ne $n) {
+      print "$name{$1}\n";
+      $n = $1;
+    }
+    if (length($_) < $linelen) {
+      print "$_\n";
+    } else {
+      $left = $linelen;
+      while (s/^\s*([^\s]+\s*)//) {
+	$word = $1;
+	if (length($word) < $left) {
+	  print "$word";
+	  $left = $left - length($word);
+	} else {
+	  # add spaces in front of continuation lines
+	  print "\n\t$word";
+	  $left = $linelen - length($word) - 8;
+	}
+      }
+      print "\n";
+    }
+  }
+}
+
+
+# Use the $bible.dir file to find the start and end
+# of the given book:
+
+sub get_book($$) {
+  my ($bible, $book) = @_;
+  my $dir;
+  ($dir = "$bible.dir") =~ s/\.gz\.dir$/\.dir/;
+  if (!-f $dir) {
+    print "Creating $dir...\n";
+    open(DIR, ">$dir") or die "Can't write `$dir': $!\n";
+    my $last = 0;
+    $/ = "\n";
+    while (<BIBLE>) {
+      if (/^Book/) {
+	print DIR "$last\n" if ($last);
+	print DIR;
+	print DIR "$last ";
+      }
+      $last += length($_);
+    }
+    print DIR "$last\n";
+    close(DIR);
+  }
+  open(DIR, $dir) or die "Can't read `$dir': $!\n";
+  undef $/;
+  $_ = <DIR>;
+  close(DIR);
+  if (/^.*Book \d\d\s(.{1,30}\()?(?i)$book/s) {
+    s/^.*(Book \d\d\s(.{1,30}\()?(?i)$book.*?\n)($|Book \d\d\s(\d )?[A-Z].*)/$1/s
+      or die "Cannot find book $book in bible $bible!\n$help";
+    # Get start and end seek positions:
+    my ($start, $end) = m/(\d+)\s+(\d+)$/ or die "Badly formatted file: $dir\n";
+    # Reset the file pointer:
+    my $len = $end - $start;
+    if (seek(BIBLE, $start, 0)) {
+      read(BIBLE, $_, $len);
+    } else {
+      read(BIBLE, $_, $start);
+      read(BIBLE, $_, $len);
+      my $junk;
+      $junk = <BIBLE>;
+    }
+    close(BIBLE);
+  } else {
+    $_ = "";
+  }
+}
+
+
