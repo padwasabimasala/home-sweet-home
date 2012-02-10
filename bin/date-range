@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 require 'date'
+require 'time'
  
-USAGE = "date-range <start date> <end date>"
 
-HELP = <<EOS 
+USAGE = <<EOS 
 Print the year month and day for all days in a date range.
 
-Usage: #{USAGE}
+Usage: date-range <start date> <end date>
 
 Example:
 
@@ -16,16 +16,8 @@ Example:
   2011 1 3
 EOS
 
-require 'rubygems'
-begin
-  require 'chronic'
-rescue LoadError
-  STDERR.puts "Chronic gem could not be loaded. Try 'sudo install gem chronic' or see http://chronic.rubyforge.org/"
-  exit 1
-end
-
 if ARGV.include?('-h') || ARGV.include?( '--help')
-  puts HELP
+  puts USAGE
   exit
 elsif ARGV.size != 2
   STDERR.puts USAGE
@@ -38,8 +30,8 @@ end
 # >> Date.civil(2010, -1, -5)
 # => Mon, 27 Dec 2010
 
-startd = Chronic.parse ARGV.first
-endd = Chronic.parse ARGV.last
+startd = Time.parse ARGV.first
+endd = Time.parse ARGV.last
 
 (startd.year..endd.year).each do |year|
   fm = (startd.year == year) ? startd.month : 1
