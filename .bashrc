@@ -328,7 +328,7 @@ function q {
   HOST=$(grep ono-leads-db1 ~/.authinfo| awk '{print $4}') 
   DB=$(grep ono-leads-db1 ~/.authinfo| awk '{print $5}') 
   SQL="$@"
-  mysql -h$HOST -u$USER -p$PASS $DB -e "$SQL"
+  mysql -h$HOST -u$USER -p$PASS $DB -B -e "$SQL" # -B is tabdelim
 }
 
 function qsh {
@@ -366,7 +366,7 @@ export PATH=$PATH:/usr/local/mysql/bin
 alias lpip="ssh leads-prod-intake-portal"
 alias lpiv="ssh leads-prod-intake-vendor"
 alias lpic="ssh leads-prod-intake-call"
-alias opmt="ssh optometry"
+alias optm="ssh optometry"
 
 set_term_bgcolor(){
   local R=$1
