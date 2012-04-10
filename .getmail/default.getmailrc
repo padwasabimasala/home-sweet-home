@@ -1,0 +1,10 @@
+[retriever]
+type = SimplePOP3SSLRetriever
+server = webmail.1on1.com
+username = mthorley@1on1.com
+port = 995
+password = 
+
+[destination]
+type = Maildir
+path = ~/mail/

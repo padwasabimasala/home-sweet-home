@@ -16,18 +16,15 @@
 # - http://www.8t8.us/mutt/
 # - https://github.com/chneeb/dotfiles/blob/master/muttrc
 
-set imap_user = "mthorley"
-set imap_pass = `grep imap.globalbased ~/.authinfo | awk '{print $2}'`
+set realname='Matthew Thorley'
 
-set smtp_url = "smtp://mthorley@zimbra.globalbased.com"
-set smtp_pass = `grep smtp.globalbased ~/.authinfo | awk '{print $2}'`
-set from = "mthorley@globalbased.com"
-set realname = "Matthew Thorley"
+set edit_headers=yes
+set mbox_type=Maildir
+set folder=~/mail
+set mbox=+mbox
+set spoolfile=+/
 
-set folder="imaps://zimbra.globalbased.com"
-set spoolfile = "+INBOX"
-set postponed = "+Drafts"
-set record = "+Sent"
+mailboxes +inbox
 
 set header_cache = ~/.mutt/cache/headers
 set message_cachedir = "~/.mutt/cache/bodies"
