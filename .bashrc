@@ -349,6 +349,15 @@ function q2 {
   mysql -h$HOST -u$USER -p$PASS $DB -e "$SQL"
 }
 
+function qadmin {
+  USER=$(grep ono-leads-admin ~/.authinfo| awk '{print $2}') 
+  PASS=$(grep ono-leads-admin ~/.authinfo| awk '{print $3}') 
+  HOST=$(grep ono-leads-admin ~/.authinfo| awk '{print $4}') 
+  DB=$(grep ono-leads-admin ~/.authinfo| awk '{print $5}') 
+  SQL="$@"
+  mysql -h$HOST -u$USER -p$PASS $DB -e "$SQL"
+}
+
 function cq {
   USER=$(grep classesa-ready-db ~/.authinfo| awk '{print $2}') 
   PASS=$(grep classesa-ready-db ~/.authinfo| awk '{print $3}') 
@@ -357,8 +366,18 @@ function cq {
   SQL="$@"
   mysql -h$HOST -u$USER -p$PASS $DB -e "$SQL"
 }
-export DYLD_LIBRARY_PATH=/usr/local/mysql/lib:$DYLD_LIBRARY_PATH;
+export DYLD_LIBRARY_PATH=/usr/local/mysql/lib:/usr/local/oracle/instantclient_10_2:$DYLD_LIBRARY_PATH;
 export PATH=$PATH:/usr/local/mysql/bin
+
+# function oracle2 {
+#   USER=$(grep contract_development ~/.authinfo| awk '{print $2}') 
+#   PASS=$(grep contract_development ~/.authinfo| awk '{print $3}') 
+#   HOST=$(grep contract_development ~/.authinfo| awk '{print $4}') 
+#     DB=$(grep contract_development ~/.authinfo| awk '{print $5}') 
+#   HIST=~/.sqlplus_history
+#   touch $HIST
+#   rlwrap -i -f $HIST -H $HIST -s 30000 /usr/local/oracle/instantclient_10_2/sqlplus $USER/$PASS@"(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=$HOST)(PORT=1521)))(CONNECT_DATA=(SID=$HOST)))"
+# }
 
 # Set up RVM 
 [[ -s "/Users/mthorley/.rvm/scripts/rvm" ]] && source "/Users/mthorley/.rvm/scripts/rvm" 

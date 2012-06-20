@@ -32,3 +32,4 @@ get_bundle vim-speeddating tpope
 get_bundle vim-surround tpope 
 get_bundle vim-vividchalk tpope 
 get_bundle vim-colors-solarized altercation
+get_bundle ctrlp.vim kien

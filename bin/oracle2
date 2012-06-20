@@ -1,0 +1,15 @@
+#!/bin/bash
+HIST=~/.sqlplus_history
+touch $HIST
+
+SQLPLUS=$(which sqlplus)
+if test "$SQLPLUS" = ''; then
+  SQLPLUS=/usr/local/oracle/instantclient_10_2/sqlplus
+fi
+
+USER=$(grep contract_development ~/.authinfo| awk '{print $2}') 
+PASS=$(grep contract_development ~/.authinfo| awk '{print $3}') 
+HOST=$(grep contract_development ~/.authinfo| awk '{print $4}') 
+SID=$(grep contract_development ~/.authinfo| awk '{print $5}') 
+
+rlwrap -i -f $HIST -H $HIST -s 30000 $SQLPLUS $USER/$PASS@"(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=$HOST)(PORT=1521)))(CONNECT_DATA=(SID=$SID)))"

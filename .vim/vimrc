@@ -42,7 +42,7 @@ set showcmd
 set hls " Highlight search
 set history=50
 set pastetoggle=<F2>
-colorscheme solarized "elflord
+colorscheme ir_black "elflord
 let mapleader=","
 
 " Let \ clear the search highlighting
