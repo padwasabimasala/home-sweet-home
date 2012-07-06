@@ -368,6 +368,13 @@ function cq {
 }
 export DYLD_LIBRARY_PATH=/usr/local/mysql/lib:/usr/local/oracle/instantclient_10_2:$DYLD_LIBRARY_PATH;
 export PATH=$PATH:/usr/local/mysql/bin
+export PATH=$PATH:/Applications/grails-2.0.4/bin
+# For oracle insta-client and oci8
+# http://blog.rayapps.com/2008/04/24/how-to-setup-ruby-and-new-oracle-instant-client-on-leopard/
+export SQLPATH="/usr/local/oracle/instantclient_10_2"
+export TNS_ADMIN="/usr/local/oracle/network/admin"
+export NLS_LANG="AMERICAN_AMERICA.UTF8"
+export PATH=$PATH:$DYLD_LIBRARY_PATH
 
 # function oracle2 {
 #   USER=$(grep contract_development ~/.authinfo| awk '{print $2}') 
