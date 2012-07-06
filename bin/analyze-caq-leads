@@ -1,0 +1,78 @@
+# Expects name of file containing lead submission ids as input. One per line.
+source ~/.bashrc
+
+LEAD_IDS="$(awk '{printf $0 ","}' < $1)NULL" # Join one leadid per line with commas. Append NULL to end trailing comma.
+
+SQL="
+  -- Parent submissions. These are lead_submission recrods with an id matching the input leadid.
+  SELECT
+    'PAR' type
+    ,ls.id leadid
+    ,ls.id bs_par
+    ,date(ls.created_at) created_at
+    ,sub_by.code sub_by
+    ,sub_to.code sub_to
+    ,lsst.value state
+    ,CASE WHEN LOCATE('ca_status', ls.serialized_inlead) < 1 THEN NULL ELSE substring_index(substring_index(ls.serialized_inlead, 'ca_status\":\"', -1), '\",', 1) END il_ca_stat
+    ,NULL first_validation_error
+    ,ls.parent_id ls_par_id
+    ,IFNULL((SELECT COUNT(*) FROM bad_intake_submissions bis WHERE bis.parent_id = ls.id), 0) bs_cnt
+  FROM
+    lead_submissions ls
+      left join entities sub_by on ls.submitted_by_entity_id = sub_by.id
+      left join entities sub_to on ls.submitted_to_entity_id = sub_to.id
+      LEFT JOIN lead_submission_state_types lsst on ls.lead_submission_state_type_id = lsst.id
+  WHERE
+    ls.id IN ($LEAD_IDS)
+  
+  UNION
+
+  -- Rejected submissions. These are bad_intake_submission records with a parent_id matching the input leadid. 
+  SELECT
+    'REJ' type
+    ,NULL leadid
+    ,bs.parent_id bs_par
+    ,date(bs.created_at) created_at
+    ,sub_by.code sub_by
+    ,sub_to.code sub_to
+    ,lsst.value state
+    ,substring_index(substring_index(bs.serialized_inlead, 'ca_status\":\"', -1), '\",', 1) il_ca_stat
+    ,SUBSTRING_INDEX(bs.validation_errors, ',', 1) first_validation_error
+    ,NULL ls_par_id
+    ,NULL bs_cnt
+  FROM
+    bad_intake_submissions bs
+      left join entities sub_by on bs.submitted_by_entity_id = sub_by.id
+      left join entities sub_to on bs.submitted_to_entity_id = sub_to.id
+      LEFT JOIN lead_submission_state_types lsst on bs.lead_submission_state_type_id = lsst.id
+  WHERE
+    bs.parent_id IN ($LEAD_IDS)
+
+  UNION
+
+  -- Accepted submissions. These are lead_submission records with a parent_id matching the input leadid.
+  SELECT
+    'ACP' type
+    ,NULL leadid
+    ,ls.parent_id bs_par
+    ,date(ls.created_at) created_at
+    ,sub_by.code sub_by
+    ,sub_to.code sub_to
+    ,lsst.value state
+    ,substring_index(substring_index(ls.serialized_inlead, 'ca_status\":\"', -1), '\",', 1) il_ca_stat
+    ,NULL first_validation_error
+    ,ls.parent_id ls_par_id
+    ,NULL bs_cnt
+  FROM
+    lead_submissions ls
+      left join entities sub_by on ls.submitted_by_entity_id = sub_by.id
+      left join entities sub_to on ls.submitted_to_entity_id = sub_to.id
+      LEFT JOIN lead_submission_state_types lsst on ls.lead_submission_state_type_id = lsst.id
+  WHERE
+    ls.parent_id IN ($LEAD_IDS)
+  
+
+  ORDER BY 
+    bs_par, leadid DESC, created_at
+  "
+q $SQL
