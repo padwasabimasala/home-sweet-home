@@ -51,7 +51,7 @@ SQL="
     ,sub_by.code sub_by
     ,sub_to.code sub_to
     ,lsst.value state
-    ,substring_index(substring_index(bs.serialized_inlead, 'ca_status\":\"', -1), '\",', 1) il_ca_stat
+    ,CASE WHEN LOCATE('ca_status', bs.serialized_inlead) < 1 THEN NULL ELSE substring_index(substring_index(bs.serialized_inlead, 'ca_status\":\"', -1), '\",', 1) END il_ca_stat
     ,SUBSTRING_INDEX(bs.validation_errors, ',', 1) first_validation_error
     ,NULL ls_par_id
     ,NULL bs_cnt
@@ -74,7 +74,7 @@ SQL="
     ,sub_by.code sub_by
     ,sub_to.code sub_to
     ,lsst.value state
-    ,substring_index(substring_index(ls.serialized_inlead, 'ca_status\":\"', -1), '\",', 1) il_ca_stat
+    ,CASE WHEN LOCATE('ca_status', ls.serialized_inlead) < 1 THEN NULL ELSE substring_index(substring_index(ls.serialized_inlead, 'ca_status\":\"', -1), '\",', 1) END il_ca_stat
     ,NULL first_validation_error
     ,ls.parent_id ls_par_id
     ,NULL bs_cnt
