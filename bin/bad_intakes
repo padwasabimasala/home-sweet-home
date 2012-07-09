@@ -1,0 +1,42 @@
+# Expects name of file containing lead submission ids as input. One per line.
+source ~/.bashrc
+
+case $# in
+0)
+  START_DATE="$(date -u +'%Y-%m-%d')"
+  END_DATE="$(date -u -v+1d +'%Y-%m-%d')"
+;;
+2)
+  START_DATE="$1"
+  END_DATE="$2"
+;;
+*)
+  echo "Pass a start date and end date, or neither for today." >/dev/stderr
+  echo "Usage: $0 [utc-start-date utc-end-date]" >/dev/stderr
+  exit 1
+esac
+
+SQL="
+  SELECT
+    'REJ' type
+    ,bs.id bs_id
+    ,bs.parent_id bs_parent_id
+    ,bs.created_at created_at
+    ,sub_by.code sub_by
+    ,sub_to.code sub_to
+    ,lsst.value state
+    ,CASE WHEN LOCATE('ca_status', bs.serialized_inlead) < 1 THEN NULL ELSE substring_index(substring_index(bs.serialized_inlead, 'ca_status\":\"', -1), '\",', 1) END ca_status
+    ,SUBSTRING_INDEX(bs.validation_errors, ',', 1) first_validation_error
+    ,NULL ls_par_id
+    ,NULL bs_cnt
+  FROM
+    bad_intake_submissions bs
+      left join entities sub_by on bs.submitted_by_entity_id = sub_by.id
+      left join entities sub_to on bs.submitted_to_entity_id = sub_to.id
+      LEFT JOIN lead_submission_state_types lsst on bs.lead_submission_state_type_id = lsst.id
+  WHERE
+    bs.created_at >= '$START_DATE' AND bs.created_at < '$END_DATE'
+  LIMIT 5000
+"
+
+q "$SQL"
