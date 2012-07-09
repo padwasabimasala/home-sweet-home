@@ -1,7 +1,22 @@
 # Expects name of file containing lead submission ids as input. One per line.
 source ~/.bashrc
 
-LEAD_IDS="$(awk '{printf $0 ","}' < $1)NULL" # Join one leadid per line with commas. Append NULL to end trailing comma.
+if [ -t 0 ]; then 
+  if [[ -z $1 ]]; then 
+    echo "Usage: $0 /path/to/leadids.txt" >2
+    exit 1
+  else 
+   LEAD_IDS="$(awk '{printf $0 ","}' < $1)NULL" # Join one leadid per line with commas. Append NULL to end trailing comma.
+  fi 
+else 
+  while read line; do 
+    if [[ -z $LEAD_IDS ]]; then
+      LEAD_IDS=$line
+    else
+      LEAD_IDS=$LEAD_IDS,$line
+    fi
+  done < /dev/stdin
+fi
 
 SQL="
   -- Parent submissions. These are lead_submission recrods with an id matching the input leadid.
@@ -75,4 +90,4 @@ SQL="
   ORDER BY 
     bs_par, leadid DESC, created_at
   "
-q $SQL
+q "$SQL"
