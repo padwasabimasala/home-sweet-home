@@ -393,6 +393,7 @@ alias lpip="ssh leads-prod-intake-portal"
 alias lpiv="ssh leads-prod-intake-vendor"
 alias lpic="ssh leads-prod-intake-call"
 alias optm="ssh optometry"
+alias nb="ssh neckbeard"
 
 set_term_bgcolor(){
   local R=$1

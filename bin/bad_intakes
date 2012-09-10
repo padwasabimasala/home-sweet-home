@@ -19,14 +19,16 @@ esac
 SQL="
   SELECT
     'REJ' type
-    ,bs.id bs_id
-    ,bs.parent_id bs_parent_id
+    ,bs.id id
     ,bs.created_at created_at
+    ,bs.parent_id parent_id
+    ,ls.created_at parent_created_at
     ,sub_by.code sub_by
     ,sub_to.code sub_to
     ,lsst.value state
     ,CASE WHEN LOCATE('ca_status', bs.serialized_inlead) < 1 THEN NULL ELSE substring_index(substring_index(bs.serialized_inlead, 'ca_status\":\"', -1), '\",', 1) END ca_status
     ,SUBSTRING_INDEX(bs.validation_errors, ',', 1) first_validation_error
+    ,SUBSTRING_INDEX(bs.validation_errors, ',', -1) last_validation_error
     ,NULL ls_par_id
     ,NULL bs_cnt
   FROM
@@ -34,9 +36,10 @@ SQL="
       left join entities sub_by on bs.submitted_by_entity_id = sub_by.id
       left join entities sub_to on bs.submitted_to_entity_id = sub_to.id
       LEFT JOIN lead_submission_state_types lsst on bs.lead_submission_state_type_id = lsst.id
+      left join lead_submissions ls on bs.parent_id = ls.id
   WHERE
     bs.created_at >= '$START_DATE' AND bs.created_at < '$END_DATE'
-  LIMIT 5000
+  LIMIT 50000
 "
 
 q "$SQL"
