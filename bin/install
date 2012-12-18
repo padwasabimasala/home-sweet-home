@@ -1,0 +1,9 @@
+# Installs dotfiles etal in home dir. Aborts if .installed exists
+
+if [ ! -f ~/.installed ]; then
+  find home-sweet-home/ -depth 1 |xargs -I {} cp -r {} ~/
+  touch ~/.installed
+else 
+  echo "~/.installed exists. Quiting." 1>&2
+  exit 1
+fi
