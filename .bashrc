@@ -15,7 +15,7 @@ export HISTSIZE=100000000
 shopt -s histappend # append to history file, don't overwrite
 
 export EDITOR=vim
-export PATH=".:..:~/bin/:~/.util/:/opt/local/bin:/opt/local/sbin:$PATH:/sbin/:/usr/sbin/:~/.gem/ruby/1.8/bin"
+export PATH=".:..:~/bin/:~/.util/:/opt/local/bin:/usr/local/bin:/usr/local/sbin:/opt/local/sbin:$PATH:/sbin/:/usr/sbin/:~/.gem/ruby/1.8/bin"
 export CDPATH=".:..:~/:~/sandbox"
 export MANPATH=/usr/local/git/man:$MANPATH
 export PYTHONPATH=".:..:$PYTHONPATH"
@@ -414,3 +414,8 @@ EOF
 # NOTES
 # Prevent ssh host key checking by appending the line below to .ssh/config
 #   StrictHostKeyChecking no 
+
+# NVM setup 
+source ~/.nvm/nvm.sh
+# RVM setup
+source ~/.rvm/scripts/rvm
