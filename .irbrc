@@ -3,7 +3,7 @@
 # - http://github.com/logankoester/irbrc/blob/master/irbrc
 # - http://github.com/greatseth/dotfiles/blob/master/irbrc
 
-$: << "/Users/mthorley/.rvm/gems/ruby-1.8.7-p334/gems/"
+$: << "/Users/mthorley/.rvm/gems/ruby-#{RUBY_VERSION}*/gems/"
 
 Dir.glob(File.expand_path(File.dirname __FILE__) + "/.gem/gems/*").each {|p| $: << p}
 
