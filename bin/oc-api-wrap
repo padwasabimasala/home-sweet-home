@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+require 'json'
+
+@host = ENV['OC_API_HOST'] || "http://localhost:3000/"
+@resource = ENV['OC_API_RESOURCE']
+@headers = ["Accept: application/json", "Content-type: application/json", "Authorization: Token token=fake_api_token"]
+
+def curl(resource, method=:get, body=nil, extra_headers=nil)
+  url = @host + resource
+
+  method_args = case method
+                when :post   then "-X POST"
+                when :put    then "-X PUT -I"
+                when :delete then "-X DELETE -I"
+                else ""
+                end
+
+  body_args =  body ? "-d '#{body.to_json}'" : nil
+
+  header_args = @headers.map{|h| "-H '#{h}'"}.join ' '
+
+  cmd = "curl -v #{method_args} #{url} #{header_args} #{body_args}" 
+
+  puts cmd
+  puts 
+  puts %x{ #{cmd} }
+end
+
+if __FILE__ == $0
+  if !@resource
+    STDERR.puts "Error: OC_API_RESOURCE not set in the ENV!"
+    exit 1
+  end
+  curl @resource
+end
+
+
+__END__
+
+Examples
+
+Get 
+
+curl "/suggestion_boxes"
+
+Create
+ 
+curl "/suggestion_boxes", :post, {suggestion_box: {name:'Cupcake Toppings', description:'Only the best Cupcake Toppings', user_uuid:'1234abcd'}}
+
+Update
+
+curl "/suggestion_boxes/2", :put, {suggestion_box: {description:'Only the VERY best Cupcake Toppings'}}
+
+Delete
+
+curl "/suggestion_boxes/1", :delete
