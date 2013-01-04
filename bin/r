@@ -1,9 +1,5 @@
 #!/bin/bash
-if test $(uname -a |grep Darwin -c) -eq 1; then
-  GREP_BASE="grep --exclude=.svn"
-else
-  GREP_BASE="grep --exclude-dir .svn"
-fi
+GREP_BASE="grep $GREP_EXCLUDE"
 
 GREP_OPTS="--color -R"
 
@@ -11,8 +7,9 @@ GREP_CMD="$GREP_BASE $GREP_OPTS"
 
 Args=($@)
 if test ${#Args[@]} -eq 1; then 
-  $GREP_CMD $1 *
+  CMD="$GREP_CMD $1 *"
 else 
-  $GREP_CMD $@
+  CMD="$GREP_CMD $@"
 fi
 
+$CMD

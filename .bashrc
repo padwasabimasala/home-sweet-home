@@ -3,6 +3,7 @@ if [ -f /etc/bash/bashrc ]; then
 fi 
 source ~/.titlebar
 source ~/.dircolors
+source ~/.grep_exclude
 
 # http://www.catonmat.net/blog/the-definitive-guide-to-bash-command-line-history/
 # make bash ignore duplicate commands, commands that begin with a space, and the ‘exit’ command.
@@ -79,7 +80,6 @@ alias vimrcedit="vi ~/.vimrc"
 alias l="ls -G"
 alias v=vi
 alias d="rm -rf"
-alias r=ruby
 alias c="cp -r"
 
 alias ls="ls -G "
