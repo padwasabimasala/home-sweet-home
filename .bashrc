@@ -21,6 +21,8 @@ export MANPATH=/usr/local/git/man:$MANPATH
 export PYTHONPATH=".:..:$PYTHONPATH"
 export PYTHONSTARTUP="$HOME/.pythonrc.py"
 
+set -o vi # set vi command editing mode
+
 # http://www.simplicidade.org/notes/archives/2008/02/git_bash_comple.html
 source ~/.git-completion.bash
 
@@ -39,6 +41,16 @@ case 'id -u' in
 esac
 export PS1
 
+# http://benmabey.com/2008/05/07/git-bash-completion-git-aliases.html
+
+alias gco='git checkout'
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gm='git checkout master'
+alias gp='git pull'
+
+complete -o default -o nospace -F _git_checkout gco
+
 # Bash completion on macs with ports installed
 if [ -f /opt/local/etc/bash_completion ]; then
   source /opt/local/etc/bash_completion
@@ -46,13 +58,6 @@ fi
 if [ -e /opt/local/bin/python2.5 ]; then
   alias python="/opt/local/bin/python2.5"
 fi
-
-set -o vi # set vi command editing mode
-source ~/.git-completion.bash
-# http://benmabey.com/2008/05/07/git-bash-completion-git-aliases.html
-alias gco='git checkout'
-#complete -d cd
-complete -o default -o nospace -F _git_checkout gco
 
 case "$TERM" in
 xterm*|rxvt*)
@@ -95,10 +100,6 @@ alias rm="rm -f "
 alias del="rm -Rf "
 alias at=/usr/bin/autotest
 
-alias gco='git checkout'
-alias gcb='git checkout -b'
-alias gp='git pull'
-
 alias du="du -hsc " # disk usage: hunman readable, summary, one file system, total
 alias df="df -h " # df (mounts) human readable
 
@@ -117,7 +118,6 @@ alias psme='ps aux|grep `whoami`'
 alias clear="clear;echo [0m;"
 
 alias tf='tail -f '
-alias gi="gem install --no-rdoc --no-ri"
 alias bi='bundle install'
 alias print='lp -o cpi=14 -o lpi=10'
 alias wl='wc -l'
