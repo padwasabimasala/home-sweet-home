@@ -19,7 +19,7 @@ def curl(resource, method=:get, body=nil, extra_headers=nil)
 
   header_args = @headers.map{|h| "-H '#{h}'"}.join ' '
 
-  cmd = "curl -v #{method_args} #{url} #{header_args} #{body_args}" 
+  cmd = "curl #{method_args} #{url} #{header_args} #{body_args}" 
 
   res = %x{ #{cmd} }
 
@@ -31,8 +31,9 @@ if __FILE__ == $0
     STDERR.puts "Error: OC_API_RESOURCE not set in the ENV!"
     exit 1
   end
-  cmd, res = curl @resource, :post, { suggestion: { subject: "Sad Trombones", body: "Why all the sad trobones?" } }
-  puts cmd
+  #cmd, res = curl @resource, :post, { suggestion: { subject: "Sad Trombones", body: "Why all the sad trobones?" } }
+  cmd, res = curl @resource 
+  STDERR.puts cmd
   p res
 end
 
