@@ -69,6 +69,9 @@ cmap w!! w !sudo tee % >/dev/null
 " Breaks forward search on line :(
 " nnoremap ; :
 
+" Jump to matching brace with ease
+map [ %
+
 " Format into paragraphs with Q
 vmap Q gq
 nmap Q gqap
