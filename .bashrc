@@ -14,10 +14,11 @@ export HISTIGNORE="&:[ ]*:exit"
 export HISTFILESIZE=100000000
 export HISTSIZE=100000000
 shopt -s histappend # append to history file, don't overwrite
+PROMPT_COMMAND="history -a" # Whenever displaying prompt, write last line to disk
 
 export EDITOR=vim
 export PATH=".:..:~/bin/:~/.util/:/opt/local/bin:/usr/local/bin:/usr/local/sbin:/opt/local/sbin:$PATH:/sbin/:/usr/sbin/:~/.gem/ruby/1.8/bin"
-export CDPATH=".:..:~/:~/sandbox"
+export CDPATH=".:..:~/:~/src"
 export MANPATH=/usr/local/git/man:$MANPATH
 export PYTHONPATH=".:..:$PYTHONPATH"
 export PYTHONSTARTUP="$HOME/.pythonrc.py"
@@ -26,6 +27,7 @@ set -o vi # set vi command editing mode
 
 # http://www.simplicidade.org/notes/archives/2008/02/git_bash_comple.html
 source ~/.git-completion.bash
+source ~/.rake-completion.bash
 
 __my_git_ps1 ()
 { 
@@ -59,14 +61,6 @@ fi
 if [ -e /opt/local/bin/python2.5 ]; then
   alias python="/opt/local/bin/python2.5"
 fi
-
-case "$TERM" in
-xterm*|rxvt*)
-    PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD}\007"'
-    ;;
-*)
-    ;;
-esac
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 # Aliases 
@@ -419,3 +413,6 @@ EOF
 source ~/.nvm/nvm.sh
 # RVM setup
 source ~/.rvm/scripts/rvm
+
+### Added by the Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"
