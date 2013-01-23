@@ -17,7 +17,7 @@ shopt -s histappend # append to history file, don't overwrite
 PROMPT_COMMAND="history -a" # Whenever displaying prompt, write last line to disk
 
 export EDITOR=vim
-export PATH=".:..:~/bin/:~/.util/:/opt/local/bin:/usr/local/bin:/usr/local/sbin:/opt/local/sbin:$PATH:/sbin/:/usr/sbin/:~/.gem/ruby/1.8/bin"
+export PATH=".:..:~/bin:./bin:/opt/local/bin:/usr/local/bin:/usr/local/sbin:/opt/local/sbin:$PATH:/sbin/:/usr/sbin/:~/.gem/ruby/1.8/bin"
 export CDPATH=".:..:~/:~/src"
 export MANPATH=/usr/local/git/man:$MANPATH
 export PYTHONPATH=".:..:$PYTHONPATH"
