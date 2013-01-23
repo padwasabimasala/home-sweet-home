@@ -1,15 +1,2 @@
 #!/bin/bash
-GREP_BASE="grep $GREP_EXCLUDE"
-
-GREP_OPTS="--color -R"
-
-GREP_CMD="$GREP_BASE $GREP_OPTS"
-
-Args=($@)
-if test ${#Args[@]} -eq 1; then 
-  CMD="$GREP_CMD $1 *"
-else 
-  CMD="$GREP_CMD $@"
-fi
-
-$CMD
+rails $@
