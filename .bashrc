@@ -5,6 +5,7 @@ source ~/.titlebar
 source ~/.dircolors
 source ~/.grep_exclude
 
+export TERM=xterm-256color
 # http://www.catonmat.net/blog/the-definitive-guide-to-bash-command-line-history/
 # make bash ignore duplicate commands, commands that begin with a space, and the ‘exit’ command.
 export HISTIGNORE="&:[ ]*:exit"
@@ -46,11 +47,10 @@ export PS1
 
 # http://benmabey.com/2008/05/07/git-bash-completion-git-aliases.html
 
-alias gco='git checkout'
-alias gco='git checkout'
 alias gcb='git checkout -b'
 alias gm='git checkout master'
 alias gp='git pull'
+alias gs='git status'
 
 complete -o default -o nospace -F _git_checkout gco
 
@@ -75,6 +75,7 @@ alias l="ls -G"
 alias v=vi
 alias d="rm -rf"
 alias c="cp -r"
+alias k=rake
 
 alias ls="ls -G "
 alias ll="ls -h -G -l "
@@ -82,7 +83,6 @@ alias lla="ls -h -G -Al "
 alias la="ls -G -A "
 alias lt="ls -h  -G -lt "
 alias ltr="ls -h  -G -ltr "
-alias lsgrep="ls -al --color |grep " 
 
 alias ..="cd .."
 alias ...="cd ../.."
@@ -91,15 +91,18 @@ alias cd..="cd .."
 alias cp='cp -r '
 alias scp='scp -r '
 alias rm="rm -f "
-alias del="rm -Rf "
-alias at=/usr/bin/autotest
 
 alias du="du -hsc " # disk usage: hunman readable, summary, one file system, total
 alias df="df -h " # df (mounts) human readable
 
-alias mgrep='grep -A2 -B2 -n --color'
+alias lsx="ls -al -G |grep " 
 alias igrep='grep -i '
-alias rbgrep="grep --include='*.rb' --color"
+alias psgrep="echo 'try psx'"
+alias psx="ps aux|grep "
+
+function pidx() {
+  ps aux |grep "$@" |grep -v grep |awk '{print $2}'
+}
 
 alias mget='wget -r -k -t45 -l2 -o log '
 
@@ -107,7 +110,6 @@ alias ka=/usr/bin/killall
 alias killall='echo Try ka'
 alias k9="kill -9 "
 alias ka9="killall -9 "
-alias psgrep="ps aux|grep "
 alias psme='ps aux|grep `whoami`'
 alias clear="clear;echo [0m;"
 
@@ -117,6 +119,9 @@ alias print='lp -o cpi=14 -o lpi=10'
 alias wl='wc -l'
 alias h1='head -n1'
 alias h10='head -n10'
+
+if [[ $(which src-hilite-lesspipe.sh) ]]; then alias cat="src-hilite-lesspipe.sh"; fi
+
 
 if [[ $(which ipython) ]]; then alias ipy=ipython; fi
 
