@@ -3,26 +3,32 @@ if [ -f /etc/bash/bashrc ]; then
 fi 
 source ~/.titlebar
 source ~/.dircolors
+source ~/.grep_exclude
 
+export TERM=xterm-256color
 # http://www.catonmat.net/blog/the-definitive-guide-to-bash-command-line-history/
 # make bash ignore duplicate commands, commands that begin with a space, and the ‘exit’ command.
 export HISTIGNORE="&:[ ]*:exit"
 
 # http://www.oreillynet.com/onlamp/blog/2007/01/whats_in_your_bash_history.html
 # posterity demmands a long history ;) cut -f1 -d" " .bash_history | sort | uniq -c | sort -nr | head -n 30 
-export HISTFIysESIZE=100000000
+export HISTFILESIZE=100000000
 export HISTSIZE=100000000
 shopt -s histappend # append to history file, don't overwrite
+PROMPT_COMMAND="history -a" # Whenever displaying prompt, write last line to disk
 
 export EDITOR=vim
-export PATH=".:..:~/bin/:~/.util/:/opt/local/bin:/opt/local/sbin:$PATH:/sbin/:/usr/sbin/:~/.gem/ruby/1.8/bin"
-export CDPATH=".:..:~/:~/sandbox"
+export PATH=".:..:~/bin:./bin:/opt/local/bin:/usr/local/bin:/usr/local/sbin:/opt/local/sbin:$PATH:/sbin/:/usr/sbin/:~/.gem/ruby/1.8/bin"
+export CDPATH=".:..:~/:~/src"
 export MANPATH=/usr/local/git/man:$MANPATH
 export PYTHONPATH=".:..:$PYTHONPATH"
 export PYTHONSTARTUP="$HOME/.pythonrc.py"
 
+set -o vi # set vi command editing mode
+
 # http://www.simplicidade.org/notes/archives/2008/02/git_bash_comple.html
 source ~/.git-completion.bash
+source ~/.rake-completion.bash
 
 __my_git_ps1 ()
 { 
@@ -39,6 +45,15 @@ case 'id -u' in
 esac
 export PS1
 
+# http://benmabey.com/2008/05/07/git-bash-completion-git-aliases.html
+
+alias gcb='git checkout -b'
+alias gm='git checkout master'
+alias gp='git pull'
+alias gs='git status'
+
+complete -o default -o nospace -F _git_checkout gco
+
 # Bash completion on macs with ports installed
 if [ -f /opt/local/etc/bash_completion ]; then
   source /opt/local/etc/bash_completion
@@ -46,21 +61,6 @@ fi
 if [ -e /opt/local/bin/python2.5 ]; then
   alias python="/opt/local/bin/python2.5"
 fi
-
-set -o vi # set vi command editing mode
-source ~/.git-completion.bash
-# http://benmabey.com/2008/05/07/git-bash-completion-git-aliases.html
-alias gco='git checkout'
-#complete -d cd
-complete -o default -o nospace -F _git_checkout gco
-
-case "$TERM" in
-xterm*|rxvt*)
-    PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD}\007"'
-    ;;
-*)
-    ;;
-esac
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 # Aliases 
@@ -74,8 +74,8 @@ alias vimrcedit="vi ~/.vimrc"
 alias l="ls -G"
 alias v=vi
 alias d="rm -rf"
-alias r=ruby
 alias c="cp -r"
+alias k=rake
 
 alias ls="ls -G "
 alias ll="ls -h -G -l "
@@ -83,7 +83,6 @@ alias lla="ls -h -G -Al "
 alias la="ls -G -A "
 alias lt="ls -h  -G -lt "
 alias ltr="ls -h  -G -ltr "
-alias lsgrep="ls -al --color |grep " 
 
 alias ..="cd .."
 alias ...="cd ../.."
@@ -92,19 +91,18 @@ alias cd..="cd .."
 alias cp='cp -r '
 alias scp='scp -r '
 alias rm="rm -f "
-alias del="rm -Rf "
-alias at=/usr/bin/autotest
-
-alias gco='git checkout'
-alias gcb='git checkout -b'
-alias gp='git pull'
 
 alias du="du -hsc " # disk usage: hunman readable, summary, one file system, total
 alias df="df -h " # df (mounts) human readable
 
-alias mgrep='grep -A2 -B2 -n --color'
+alias lsx="ls -al -G |grep " 
 alias igrep='grep -i '
-alias rbgrep="grep --include='*.rb' --color"
+alias psgrep="echo 'try psx'"
+alias psx="ps aux|grep "
+
+function pidx() {
+  ps aux |grep "$@" |grep -v grep |awk '{print $2}'
+}
 
 alias mget='wget -r -k -t45 -l2 -o log '
 
@@ -112,17 +110,18 @@ alias ka=/usr/bin/killall
 alias killall='echo Try ka'
 alias k9="kill -9 "
 alias ka9="killall -9 "
-alias psgrep="ps aux|grep "
 alias psme='ps aux|grep `whoami`'
 alias clear="clear;echo [0m;"
 
 alias tf='tail -f '
-alias gi="gem install --no-rdoc --no-ri"
 alias bi='bundle install'
 alias print='lp -o cpi=14 -o lpi=10'
 alias wl='wc -l'
 alias h1='head -n1'
 alias h10='head -n10'
+
+if [[ $(which src-hilite-lesspipe.sh) ]]; then alias cat="src-hilite-lesspipe.sh"; fi
+
 
 if [[ $(which ipython) ]]; then alias ipy=ipython; fi
 
@@ -414,3 +413,11 @@ EOF
 # NOTES
 # Prevent ssh host key checking by appending the line below to .ssh/config
 #   StrictHostKeyChecking no 
+
+# NVM setup 
+source ~/.nvm/nvm.sh
+# RVM setup
+source ~/.rvm/scripts/rvm
+
+### Added by the Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"
