@@ -1,0 +1,13 @@
+#!/bin/bash
+# Works on Snow Leopard
+
+DEVICE=$(/usr/sbin/networksetup -listallhardwareports |grep -A1 AirPort |grep Device |awk '{print $2}')
+STATUS=$(/usr/sbin/networksetup -getairportpower $DEVICE |awk '{print $4}')
+
+if test $STATUS = On; then
+  sudo /usr/sbin/networksetup -setairportpower $DEVICE off
+  echo AirPort is off
+else
+  sudo /usr/sbin/networksetup -setairportpower $DEVICE on
+  echo AirPort is on
+fi
