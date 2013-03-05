@@ -1,5 +1,6 @@
 #!/bin/bash
 # Works on Snow Leopard
+# http://macstuff.beachdogs.org/blog/?p=44
 
 DEVICE=$(/usr/sbin/networksetup -listallhardwareports |grep -A1 AirPort |grep Device |awk '{print $2}')
 STATUS=$(/usr/sbin/networksetup -getairportpower $DEVICE |awk '{print $4}')
