@@ -1,0 +1,21 @@
+#!/bin/bash
+
+brew install bash-completion
+
+echo "Symlinking brew bash completion"
+ln -nfs "/usr/local/Library/Contributions/brew_bash_completion.sh" "/usr/local/etc/bash_completion.d"
+
+if [ -e $HOME/.bashrc ];then 
+  echo Sourcing bash completion in $HOME/.bashrc
+
+  echo "
+  if [ -f $(brew --prefix)/etc/bash_completion ]; then
+      . $(brew --prefix)/etc/bash_completion
+  fi
+  " >> $HOME/.bashrc
+
+  source $HOME/.bashrc
+fi
+
+
+
