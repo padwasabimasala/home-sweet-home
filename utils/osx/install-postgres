@@ -1,0 +1,13 @@
+#!/bin/bash
+
+brew install postgres
+
+dbpath=/usr/local/var/postgres
+
+if [ ! -d $dbpath ]; then
+  echo Initializing database in $dbpath
+  initdb $dbpath -E utf8
+fi
+
+echo Starting Postgres
+pg_ctl -D $dbpath -l $dbpath/server.log start
