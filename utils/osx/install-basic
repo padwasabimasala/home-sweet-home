@@ -9,6 +9,7 @@ ack
 autoconf
 automake
 apple-gcc42
+vim
 "
 
 for app in $apps; do
