@@ -1,9 +1,13 @@
-if [ -f /etc/bash/bashrc ]; then
-    source /etc/bash/bashrc
-fi 
+source_if() {
+	if [ -e $1 ]; then
+		source $1
+	fi 
+}
+
+source_if /etc/bash/bashrc
+
 source ~/.titlebar
 source ~/.dircolors
-source ~/.grep_exclude
 
 export TERM=xterm-256color
 # http://www.catonmat.net/blog/the-definitive-guide-to-bash-command-line-history/
@@ -414,10 +418,7 @@ EOF
 # Prevent ssh host key checking by appending the line below to .ssh/config
 #   StrictHostKeyChecking no 
 
-# NVM setup 
-source ~/.nvm/nvm.sh
-# RVM setup
-source ~/.rvm/scripts/rvm
+source_if ~/.nvm/nvm.sh
 
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
