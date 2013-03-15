@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+if [[ ! $(which gcc) ]]; then
+  echo "No gcc found. Quiting
+
+Be sure to install either Xcode and/or Xcode Commandline Tools before running this script.
+- https://itunes.apple.com/us/app/xcode/id497799835?mt=12
+- https://developer.apple.com/downloads/index.action"
+
+	exit 1
+fi
+
+#
+# Install and setup brew (from own fork for security and stability). Official at mxcl/homebrew.
+#
+
+brew_source=padwasabimasala/homebrew
+
+echo Installing homebrew from $brew_source
+
+ruby -e "$(curl -fsSkL raw.github.com/$brew_source/go)"
+
+brew update
+
+brew doctor
+
+# These formulae duplicate software provided by OS X, though may provide more recent or bugfix versions.
+
+brew tap homebrew/dupes 
+
