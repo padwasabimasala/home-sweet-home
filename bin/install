@@ -1,13 +1,53 @@
-# Installs dotfiles etal in home dir. Aborts if .installed exists
-# TODO
-# Source .bashrc
-# Install vim bundles
-# Install any extras
+# Borrowed heavily from https://github.com/hashrocket/dotmatrix/blob/master/bin/install
 
-if [ ! -f ~/.installed ]; then
-  find home-sweet-home/ -depth 1 |xargs -I {} cp -r {} ~/
-  touch ~/.installed
-else 
-  echo "~/.installed exists. Quiting." 1>&2
-  exit 1
-fi
+set -e # ~Abort if any command fails - http://ss64.com/bash/set.html
+
+abort_if_installed() {
+	if [[ -f $HOME/.installed ]]; then
+		echo "$HOME/.installed exists. Quiting." 1>&2
+		exit 1
+	fi
+}
+
+abort_if_wrong_pwd() {
+	if [[ ! "$PWD/bin/install" -ef "$0" ]]; then
+		echo "Please run 'bin/install' from home-sweet-home root folder"
+		exit 1
+	fi
+}
+
+link_if_not_exists() {
+  source_path=$1
+	install_path=$2
+
+	if [[ -e $install_path ]]; then
+		echo -e "Skipping $install_path. Already exists"
+	else
+		ln -nfs $source_path $install_path
+	fi
+}
+
+install_files() {
+	exclude_files="README.md"
+	install_files=$(find . -type f -depth 1 |grep -Ev "$exclude_files" )
+
+	for file in $install_files; do
+	  file=$(basename $file)
+		link_if_not_exists "$PWD/$file" "$HOME/.$file"
+	done
+}
+
+install_dirs() {
+	exclude_dirs=".git|getmail"
+	install_dirs=$(find . -type d -depth 1 |grep -Ev "$exclude_dirs" )
+
+	for dir in $install_dirs; do
+	  dir=$(basename $dir)
+	  link_if_not_exists "$PWD/$dir" "$HOME/$dir"
+	done
+}
+
+abort_if_installed
+abort_if_wrong_pwd
+install_files
+install_dirs
