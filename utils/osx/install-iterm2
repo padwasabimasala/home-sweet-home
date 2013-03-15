@@ -1,0 +1,38 @@
+#!/bin/bash
+# This is a non-stable release.
+# The current stable release is https://iterm2.googlecode.com/files/iTerm2_v1_0_0.zip
+
+if [ -e /Applications/iTerm2.app ];then
+  echo Already installed.
+  exit 1
+fi
+
+cleanup() {
+  cd ..
+  rm -Rf $tempdir/*
+  rmdir $tempdir
+}
+
+# Setup
+  tempdir=$(mktemp -d tmp-XXXXXXXX)
+  cd $tempdir
+
+
+# Download
+
+  download=iterm2.zip
+  
+  curl https://iterm2.googlecode.com/files/iTerm2-1_0_0_20130310.zip > $download
+  
+  if [ ! -e $download ]; then
+    echo iTerm2 did not download. Aborting
+    cleanup
+    exit 1
+  fi
+
+# Install
+  unzip $download
+  mv iTerm.app /Applications/iTerm2.app
+
+cleanup
+
