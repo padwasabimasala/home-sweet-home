@@ -1,0 +1,16 @@
+#!/bin/bash
+
+base=$HOME/.read-defaults.cache
+
+if [ -f $base-a ]; then
+  if [ -f $base-b ]; then
+    cp $base-b $base-a
+    defaults read > $base-b
+  else
+    defaults read > $base-b
+  fi
+  diff $base-a $base-b
+else
+  echo "Initializing cache. Any changes will show next time run"
+  defaults read > $base-a
+fi
