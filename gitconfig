@@ -35,9 +35,11 @@
   dc = diff --color --cached
   l =  log --abbrev-commit --date=short --pretty=format:'%h  %cd  "%s" -- %an'
   lg = "!git log --abbrev-commit --date=short --pretty=format:'-SEP-%h-SEP-%cd-SEP-%s-SEP-%an-SEP-%d' | awk -F '-SEP-' '{ printf \"%s\\033[31m%s\\033[0m \\033[32m%s\\033[0m   %-100s \\033[30;1m%s\\033[0m\\033[33m%s\\n\", $1, $2, $3, $4, $5, $6 }'|less -R"
+  lga = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
   untracked = "ls-files --other --exclude-standard"
   ignore = update-index --assume-unchanged
   p = pull
+  r = revert
   rh = reset --hard
   # http://www.commandlinefu.com/commands/view/2345/show-git-branches-by-date-useful-for-showing-active-branches
   recent-branches = "!for k in `git branch|perl -pe s/^..//`;do echo `git show --pretty=format:'%Cgreen%ci %Cblue%cr%Creset' $k|head -n 1`\t$k;done|sort -r"

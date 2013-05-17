@@ -1202,6 +1202,7 @@ _gitk ()
 }
 
 complete -o default -o nospace -F _git git
+complete -o default -o nospace -F _git g
 complete -o default -o nospace -F _gitk gitk
 complete -o default -o nospace -F _git_am git-am
 complete -o default -o nospace -F _git_apply git-apply

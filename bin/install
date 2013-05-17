@@ -33,7 +33,7 @@ install_files() {
 
 	for file in $install_files; do
 	  file=$(basename $file)
-		link_if_not_exists "$PWD/$file" "$HOME/.$file"
+       	  link_if_not_exists "$PWD/$file" "$HOME/.$file"
 	done
 }
 

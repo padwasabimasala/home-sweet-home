@@ -103,6 +103,7 @@ alias lsx="ls -al -G |grep "
 alias igrep='grep -i '
 alias psgrep="echo 'try psx'"
 alias psx="ps aux|grep "
+alias chmox="chmod +x"
 
 function pidx() {
   ps aux |grep "$@" |grep -v grep |awk '{print $2}'
@@ -123,6 +124,8 @@ alias print='lp -o cpi=14 -o lpi=10'
 alias wl='wc -l'
 alias h1='head -n1'
 alias h10='head -n10'
+
+alias jcurl='curl -H "Accept: application/json" -H "Content-type: application/json"'
 
 if [[ $(which src-hilite-lesspipe.sh) ]]; then alias cat="src-hilite-lesspipe.sh"; fi
 
@@ -413,6 +416,9 @@ end tell
 EOF
 }
 
+function heroku-psql {
+  bash -c "$(heroku config -a $1 |grep DATABASE_URL |ruby -e 'STDIN.first =~ %r(DATA.*://(\w+):(\w+)@(.+):(\d+)/(\w+)); puts "PGPASSWORD=#{$2} psql -h #{$3} -U #{$1} -p #{$4} #{$5}"')"
+}
 
 # NOTES
 # Prevent ssh host key checking by appending the line below to .ssh/config
@@ -422,3 +428,14 @@ source_if ~/.nvm/nvm.sh
 
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
+
+if [ -f /usr/local/etc/bash_completion ]; then
+    . /usr/local/etc/bash_completion
+fi
+  
+eval "$(rbenv init -)"
+
+# NVM setup 
+source ~/.nvm/nvm.sh
+source_if .octannerrc
+

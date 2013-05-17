@@ -18,8 +18,12 @@ get_bundle vim-irblack wgibbs  # ir_black color scheme
 get_bundle tcomment_vim tomtom # Use cnt-_ _ to comment line or block
 get_bundle vim-matchit tsaleh 
 get_bundle vim-textobj-user kana 
-get_bundle vim-textobj-rubyblock nelstrom 
+get_bundle vim-textobj-rubyblock nelstrom # use var/vir to select ruby blocks
+
+# Fuzzy finders. Neither of which seems to work as well as sublime/textmate :(
 get_bundle ctrlp.vim kien
+get_bundle L9 vim-scripts
+get_bundle FuzzyFinder vim-scripts
 
 #get_bundle Command-T wincent # requires compilation and was totally broken last time attempted
 #get_bundle vim-abolish sensible
@@ -38,7 +42,7 @@ get_bundle ctrlp.vim kien
 #get_bundle vim-repeat tpope 
 #get_bundle vim-ruby vim-ruby
 #get_bundle vim-speeddating tpope 
-#get_bundle vim-surround tpope 
+get_bundle vim-surround tpope 
 #get_bundle vim-vividchalk tpope 
 #get_bundle vim-colors-solarized altercation
 #get_bundle ctrlp.vim kien

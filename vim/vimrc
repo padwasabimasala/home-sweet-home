@@ -54,6 +54,8 @@ set showcmd
 set hls " Highlight search
 set history=50
 set pastetoggle=<F2>
+set modeline " Show filename in bar
+set ls=2
 colorscheme elflord
 hi Operator        guifg=#6699CC     guibg=NONE        gui=NONE      ctermfg=lightblue   ctermbg=NONE        cterm=NONE
 
@@ -68,8 +70,8 @@ map <silent> H :set hls!<CR>
 noremap j gj
 noremap k gk
 
-" Map j to <Esc> during insert mode
-inoremap kj <Esc>
+" Map jj to <Esc> during insert mode
+inoremap jj <Esc>
 
 " Move windows quickly
 map <C-h> <C-w>h
