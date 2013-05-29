@@ -55,6 +55,17 @@ alias gcb='git checkout -b'
 alias gm='git checkout master'
 alias gp='git pull'
 alias gs='git status'
+alias gc="git checkout"
+alias gd="git d"
+alias gn='git clone'
+alias gx='git merge'
+alias gz='git rebase'
+
+gfzm ()
+{
+  branch=$(git branch |grep \* |cut -d\* -f2)
+  git fetch && git rebase origin/master && git checkout $branch
+}
 
 complete -o default -o nospace -F _git_checkout gco
 
@@ -67,7 +78,7 @@ if [ -e /opt/local/bin/python2.5 ]; then
 fi
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-# Aliases 
+# Aliases :
 alias rcedit='vi ~/.bashrc'
 alias rccommit='git add ~/.bashrc; git commit ~/.bashrc'
 alias rcdiff="git diff HEAD ~/.bashrc"
@@ -76,7 +87,6 @@ alias vimrcedit="vi ~/.vimrc"
 
 # Good old fasion laziness
 alias l="ls -G"
-alias v=vi
 alias d="rm -rf"
 alias c="cp -r"
 alias k=rake

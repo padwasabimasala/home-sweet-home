@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# Time the execution of a command
+
+require 'benchmark'
+require 'open3'
+
+cmd = ARGV.join " "
+times = 3
+
+Benchmark.bm(times) do |x|
+  x.report do 
+    stdin, stdout, stderr = Open3.popen3(cmd)
+    stdin.close
+    stdout.readlines
+    stderr.readlines
+  end
+end
