@@ -1,4 +1,3 @@
-#
 # bash completion support for core Git.
 #
 # Copyright (C) 2006,2007 Shawn O. Pearce <spearce@spearce.org>
@@ -1202,7 +1201,6 @@ _gitk ()
 }
 
 complete -o default -o nospace -F _git git
-complete -o default -o nospace -F _git g
 complete -o default -o nospace -F _gitk gitk
 complete -o default -o nospace -F _git_am git-am
 complete -o default -o nospace -F _git_apply git-apply

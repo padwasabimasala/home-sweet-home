@@ -1,15 +1,11 @@
-source_if() {
-	if [ -e $1 ]; then
-		source $1
-	fi 
-}
-
-source_if /etc/bash/bashrc
-
-source ~/.titlebar
-source ~/.dircolors
-
+# ENV ------------------------------------------------------------------------------------------------------
 export TERM=xterm-256color
+export EDITOR=vim
+export PATH=".:./bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin:$PATH"
+export CDPATH=".:..:~/:~/src"
+export PYTHONPATH=".:..:$PYTHONPATH"
+export PYTHONSTARTUP="$HOME/.pythonrc.py"
+
 # http://www.catonmat.net/blog/the-definitive-guide-to-bash-command-line-history/
 # make bash ignore duplicate commands, commands that begin with a space, and the ‘exit’ command.
 export HISTIGNORE="&:[ ]*:exit"
@@ -18,74 +14,75 @@ export HISTIGNORE="&:[ ]*:exit"
 # posterity demmands a long history ;) cut -f1 -d" " .bash_history | sort | uniq -c | sort -nr | head -n 30 
 export HISTFILESIZE=100000000
 export HISTSIZE=100000000
-shopt -s histappend # append to history file, don't overwrite
-PROMPT_COMMAND="history -a" # Whenever displaying prompt, write last line to disk
 
-export EDITOR=vim
-export PATH=".:..:~/bin:./bin:/opt/local/bin:/usr/local/bin:/usr/local/sbin:/opt/local/sbin:$PATH:/sbin/:/usr/sbin/:~/.gem/ruby/1.8/bin"
-export CDPATH=".:..:~/:~/src"
-export MANPATH=/usr/local/git/man:$MANPATH
-export PYTHONPATH=".:..:$PYTHONPATH"
-export PYTHONSTARTUP="$HOME/.pythonrc.py"
+# append to history file, don't overwrite
+shopt -s histappend 
 
-set -o vi # set vi command editing mode
+# Whenever displaying prompt, write last line to disk
+PROMPT_COMMAND="history -a" 
 
-# http://www.simplicidade.org/notes/archives/2008/02/git_bash_comple.html
-source ~/.git-completion.bash
+source ~/.titlebar
+source ~/.dircolors
 source ~/.rake-completion.bash
 
-__my_git_ps1 ()
-{ 
-  local b="$(git reflog 2> /dev/null |grep checkout: |head -n1 |awk '{print $8}' 2> /dev/null)"
-  if [ -n "$b" ]; then
-    printf " ($b)"
-  fi
+__source_if() {
+	if [ -e $1 ]; then
+		source $1
+	fi 
 }
 
-PS1='\u@\h \W$(__my_git_ps1)'
-case 'id -u' in
-  0) PS1="${PS1}# ";;
-  *) PS1="${PS1}$ ";;
-esac
-export PS1
+__path_if() {
+	if [ -e $1 ]; then
+		export PATH=$PATH:$1
+	fi 
+}
 
+__source_if .octannerrc
+__source_if ~/.nvm/nvm.sh
+__source_if /usr/local/etc/bash_completion
+__source_if ~/.nvm/nvm.sh
+
+__path_if /usr/local/heroku/bin
+  
+eval "$(rbenv init -)"
+
+# GIT  ------------------------------------------------------------------------------------------------------
+# Git completion, aliases, and prompt func
+# http://www.simplicidade.org/notes/archives/2008/02/git_bash_comple.html
 # http://benmabey.com/2008/05/07/git-bash-completion-git-aliases.html
 
+source ~/.git-completion.bash
+complete -o default -o nospace -F _git g # ~/bin/g
+
+alias gc="git checkout "
+complete -o default -o nospace -F _git_checkout gc
+
+alias gx='git merge'
+complete -o default -o nospace -F _git_merge gx
+
+alias gz='git rebase'
+complete -o default -o nospace -F _git_rebase gz
+
+alias gs='git status'
+alias gp='git pull'
+alias gn='git clone'
+alias gd="git d"
 alias gcb='git checkout -b'
 alias gm='git checkout master'
-alias gp='git pull'
-alias gs='git status'
-alias gc="git checkout"
-alias gd="git d"
-alias gn='git clone'
-alias gx='git merge'
-alias gz='git rebase'
 
 gfzm ()
 {
-  branch=$(git branch |grep \* |cut -d\* -f2)
+  local branch=$(git branch |grep \* |cut -d\* -f2)
   git fetch && git rebase origin/master && git checkout $branch
 }
 
-complete -o default -o nospace -F _git_checkout gco
-
-# Bash completion on macs with ports installed
-if [ -f /opt/local/etc/bash_completion ]; then
-  source /opt/local/etc/bash_completion
-fi
-if [ -e /opt/local/bin/python2.5 ]; then
-  alias python="/opt/local/bin/python2.5"
-fi
-
-#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-# Aliases :
+# ALias City ------------------------------------------------------------------------------------------------------
 alias rcedit='vi ~/.bashrc'
 alias rccommit='git add ~/.bashrc; git commit ~/.bashrc'
 alias rcdiff="git diff HEAD ~/.bashrc"
 alias rcreload="source ~/.bashrc"
 alias vimrcedit="vi ~/.vimrc"
 
-# Good old fasion laziness
 alias l="ls -G"
 alias d="rm -rf"
 alias c="cp -r"
@@ -115,10 +112,6 @@ alias psgrep="echo 'try psx'"
 alias psx="ps aux|grep "
 alias chmox="chmod +x"
 
-function pidx() {
-  ps aux |grep "$@" |grep -v grep |awk '{print $2}'
-}
-
 alias mget='wget -r -k -t45 -l2 -o log '
 
 alias ka=/usr/bin/killall
@@ -137,10 +130,17 @@ alias h10='head -n10'
 
 alias jcurl='curl -H "Accept: application/json" -H "Content-type: application/json"'
 
+function pidx() {
+  ps aux |grep "$@" |grep -v grep |awk '{print $2}'
+}
+
+oct-api-curl () {
+  resource=$1
+  shift
+  jcurl -H "Authorization: Token token=$(grep api.octanner.com ~/.auth| cut -d' ' -f2)" https://api.octanner.com/$resource $@
+}
+
 if [[ $(which src-hilite-lesspipe.sh) ]]; then alias cat="src-hilite-lesspipe.sh"; fi
-
-
-if [[ $(which ipython) ]]; then alias ipy=ipython; fi
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 # Functions
@@ -165,7 +165,6 @@ function _mv {
 function _cp {
   cp $1 _$1
 }
-
 
 function mcd {
   mkdir $1; cd $1
@@ -289,48 +288,6 @@ function newterm {
 }
 alias nt=newterm
 
-
-#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-# Host specific settings
-#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-function mb_logins
-{
-  alias api='ssh root@api'
-
-  user=mrt
-
-  for i in admin micro; do 
-    alias $i="ssh $user@${i}"
-  done
-
-  alias mon="ssh mrt@monitor"
-  alias www="ssh developer@www.globalbased.com"
-  alias db="ssh root@db"
-
-  for i in $(seq -w 1 12); do
-    alias d$i="ssh $user@drone$i.miningbased.com"
-  done
-
-  for i in `seq -w 01 07`; do 
-    alias m$i="ssh $user@micro$i.miningbased.com"
-  done
-
-  for i in 01 02; do 
-    alias q$i="ssh $user@queue$i.miningbased.com"
-  done
-}
-
-if [[ `hostname` == mrt ]]; then
-  export REPO=http://svn.miningbased.com/svn/
-  export hive=$REPO/hive
-  mb_logins
-fi
-
-if ! test -z $(which gnome-open); then 
-  alias open=gnome-open
-fi
-
 # http://machine-cycle.blogspot.com/2007/10/syntax-highlighting-pager.html
 if [[ -s /usr/share/vim/vim72/macros/less.sh ]]; then 
   - () {
@@ -346,70 +303,6 @@ function q {
   SQL="$@"
   mysql -h$HOST -u$USER -p$PASS $DB -B -e "$SQL" # -B is tabdelim
 }
-
-function qsh {
-  USER=$(grep ono-leads-db1 ~/.authinfo| awk '{print $2}') 
-  PASS=$(grep ono-leads-db1 ~/.authinfo| awk '{print $3}') 
-  HOST=$(grep ono-leads-db1 ~/.authinfo| awk '{print $4}') 
-  DB=$(grep ono-leads-db1 ~/.authinfo| awk '{print $5}') 
-  SQL="$@"
-  mysql -h$HOST -u$USER -p$PASS $DB
-}
-
-function q2 {
-  USER=$(grep ono-leads-db2 ~/.authinfo| awk '{print $2}') 
-  PASS=$(grep ono-leads-db2 ~/.authinfo| awk '{print $3}') 
-  HOST=$(grep ono-leads-db2 ~/.authinfo| awk '{print $4}') 
-  DB=$(grep ono-leads-db2 ~/.authinfo| awk '{print $5}') 
-  SQL="$@"
-  mysql -h$HOST -u$USER -p$PASS $DB -e "$SQL"
-}
-
-function qadmin {
-  USER=$(grep ono-leads-admin ~/.authinfo| awk '{print $2}') 
-  PASS=$(grep ono-leads-admin ~/.authinfo| awk '{print $3}') 
-  HOST=$(grep ono-leads-admin ~/.authinfo| awk '{print $4}') 
-  DB=$(grep ono-leads-admin ~/.authinfo| awk '{print $5}') 
-  SQL="$@"
-  mysql -h$HOST -u$USER -p$PASS $DB -e "$SQL"
-}
-
-function cq {
-  USER=$(grep classesa-ready-db ~/.authinfo| awk '{print $2}') 
-  PASS=$(grep classesa-ready-db ~/.authinfo| awk '{print $3}') 
-  HOST=$(grep classesa-ready-db ~/.authinfo| awk '{print $4}') 
-  DB=$(grep classesa-ready-db ~/.authinfo| awk '{print $5}') 
-  SQL="$@"
-  mysql -h$HOST -u$USER -p$PASS $DB -e "$SQL"
-}
-export DYLD_LIBRARY_PATH=/usr/local/mysql/lib:/usr/local/oracle/instantclient_10_2:$DYLD_LIBRARY_PATH;
-export PATH=$PATH:/usr/local/mysql/bin
-export PATH=$PATH:/Applications/grails-2.0.4/bin
-# For oracle insta-client and oci8
-# http://blog.rayapps.com/2008/04/24/how-to-setup-ruby-and-new-oracle-instant-client-on-leopard/
-export SQLPATH="/usr/local/oracle/instantclient_10_2"
-export TNS_ADMIN="/usr/local/oracle/network/admin"
-export NLS_LANG="AMERICAN_AMERICA.UTF8"
-export PATH=$PATH:$DYLD_LIBRARY_PATH
-
-# function oracle2 {
-#   USER=$(grep contract_development ~/.authinfo| awk '{print $2}') 
-#   PASS=$(grep contract_development ~/.authinfo| awk '{print $3}') 
-#   HOST=$(grep contract_development ~/.authinfo| awk '{print $4}') 
-#     DB=$(grep contract_development ~/.authinfo| awk '{print $5}') 
-#   HIST=~/.sqlplus_history
-#   touch $HIST
-#   rlwrap -i -f $HIST -H $HIST -s 30000 /usr/local/oracle/instantclient_10_2/sqlplus $USER/$PASS@"(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=$HOST)(PORT=1521)))(CONNECT_DATA=(SID=$HOST)))"
-# }
-
-# Set up RVM 
-[[ -s "/Users/mthorley/.rvm/scripts/rvm" ]] && source "/Users/mthorley/.rvm/scripts/rvm" 
-
-alias lpip="ssh leads-prod-intake-portal"
-alias lpiv="ssh leads-prod-intake-vendor"
-alias lpic="ssh leads-prod-intake-call"
-alias optm="ssh optometry"
-alias nb="ssh neckbeard"
 
 set_term_bgcolor(){
   local R=$1
@@ -430,22 +323,18 @@ function heroku-psql {
   bash -c "$(heroku config -a $1 |grep DATABASE_URL |ruby -e 'STDIN.first =~ %r(DATA.*://(\w+):(\w+)@(.+):(\d+)/(\w+)); puts "PGPASSWORD=#{$2} psql -h #{$3} -U #{$1} -p #{$4} #{$5}"')"
 }
 
-# NOTES
-# Prevent ssh host key checking by appending the line below to .ssh/config
-#   StrictHostKeyChecking no 
+# Hrrrm this is getting overridden by something above so I moved it to the bottom
+__my_git_ps1 ()
+{ 
+  local b="$(git reflog 2> /dev/null |grep checkout: |head -n1 |awk '{print $8}' 2> /dev/null)"
+  if [ -n "$b" ]; then
+    printf " ($b)"
+  fi
+}
 
-source_if ~/.nvm/nvm.sh
-
-### Added by the Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
-
-if [ -f /usr/local/etc/bash_completion ]; then
-    . /usr/local/etc/bash_completion
-fi
-  
-eval "$(rbenv init -)"
-
-# NVM setup 
-source ~/.nvm/nvm.sh
-source_if .octannerrc
-
+PS1='\u@\h \W$(__my_git_ps1)'
+case 'id -u' in
+  0) PS1="${PS1}# ";;
+  *) PS1="${PS1}$ ";;
+esac
+export PS1
