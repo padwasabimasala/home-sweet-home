@@ -1,0 +1,2 @@
+#!/usr/bin/env ruby
+puts STDIN.readlines.inject(0){|sum,ln| sum += (ln.to_i rescue 0); sum}

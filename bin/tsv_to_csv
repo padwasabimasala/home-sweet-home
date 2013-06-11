@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'fastercsv'
+
+csv = ARGV.first ? FCSV.open(ARGV.first, "w") : FCSV.new(STDOUT)
+
+STDIN.each do |ln|
+  row = ln.split("\t").map{|v| v.split}
+  csv << row
+end

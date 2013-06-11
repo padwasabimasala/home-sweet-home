@@ -1,0 +1,2 @@
+mysql -u $USER -p$PASS -h $HOST $DBNAME -e "show full processlist" |tail +2 |awk '{if ($6 > 1799) print $1}' |xargs -I {} mysql -u $USER -p$PASS -h $HOST $DBNAME -e "kill {}" 
+

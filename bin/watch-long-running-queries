@@ -1,0 +1,2 @@
+watch -n 60 "mysql -u $USER -p$PASS -h $HOST $DBNAME -e 'show full processlist' |tail +2 |awk '{if (\$6 > 1500) print \$0}'"
+

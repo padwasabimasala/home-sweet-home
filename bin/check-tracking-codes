@@ -1,0 +1,11 @@
+#!/bin/bash
+source ~/.bashrc
+SQL="
+(SELECT id, submitted_by_entity_id, SUBSTR(SUBSTRING_INDEX(SUBSTRING_INDEX(serialized_inlead,'\"tracking_code_parsed\":\"',-1), '\",\"', 1),1,80), SUBSTR(tracking_code_full,1,25) FROM lead_submissions WHERE submitted_by_entity_id = 44 ORDER BY id DESC LIMIT 10)
+UNION
+(SELECT id, submitted_by_entity_id, SUBSTR(SUBSTRING_INDEX(SUBSTRING_INDEX(serialized_inlead,'\"tracking_code_parsed\":\"',-1), '\",\"', 1),1,80), SUBSTR(tracking_code_full,1,25) FROM lead_submissions WHERE submitted_by_entity_id = 5 ORDER BY id DESC LIMIT 10)
+UNION
+(SELECT id, submitted_by_entity_id, SUBSTR(SUBSTRING_INDEX(SUBSTRING_INDEX(serialized_inlead,'\"tracking_code_parsed\":\"',-1), '\",\"', 1),1,80), SUBSTR(tracking_code_full,1,25) FROM lead_submissions WHERE submitted_by_entity_id = 8 ORDER BY id DESC LIMIT 10)
+"
+
+q "$SQL"
