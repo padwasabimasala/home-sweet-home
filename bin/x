@@ -1,4 +1,6 @@
 #!/bin/bash
+GREP_EXCLUDE="--exclude-dir=log"
+
 GREP_BASE="grep $GREP_EXCLUDE"
 
 GREP_OPTS="--color -R"
