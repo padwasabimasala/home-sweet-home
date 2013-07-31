@@ -43,6 +43,8 @@
   rh = reset --hard
   # http://www.commandlinefu.com/commands/view/2345/show-git-branches-by-date-useful-for-showing-active-branches
   recent-branches = "!for k in `git branch|perl -pe s/^..//`;do echo `git show --pretty=format:'%Cgreen%ci %Cblue%cr%Creset' $k|head -n 1`\t$k;done|sort -r"
+  # http://stackoverflow.com/questions/1161609/in-git-how-can-i-get-the-diff-between-all-the-commits-that-occured-between-two
+  recent-changes = "!git diff --color $(git rev-list -n1 --before=\"1 day ago\" master)"
   s = status
   unadd = reset HEAD
   undo-last-commit  = reset --soft HEAD^
