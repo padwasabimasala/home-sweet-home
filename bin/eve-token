@@ -1,4 +1,10 @@
 #!/bin/sh
-#curl -d "grant_type=password" -d "username=bob" -d "password=secret" 'https://abc123:ssh-secret@oc-eve-prod.herokuapp.com/oauth/token'
-curl -d "grant_type=password" -d "username=adam.tanner@octanner.com" -d "password=iloveapples" 'https://abc123:ssh-secret@api.octanner.com/oauth/token'
-#curl -d "grant_type=password" -d "username=mtest.mtest@octanner.com" -d "password=password" 'https://abc123:ssh-secret@api.octanner.com/oauth/token'
+if test "$1" == "test"; then
+  host=oc-eve-test.herokuapp.com
+else 
+  host=api.thanks.com
+fi
+
+json=$(curl -s -d "grant_type=password" -d "username=adam.tanner@octanner.com" -d "password=iloveapples" "abc123:ssh-secret@$host/oauth/token")
+token=$(expr "$json" : '.*"access_token":"\([^"]*\)"')
+echo $token
