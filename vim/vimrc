@@ -32,6 +32,8 @@ if &term =~# '^\(screen\|xterm\)$'
   set t_Co=256
 endif
 
+set shellcmdflag=-c 
+
 " Required for vim-textobj-rubyblock
 runtime macros/matchit.vim
 if has("autocmd")
