@@ -1,0 +1,4 @@
+# make spaces animation fast - http://superuser.com/questions/333872/how-do-i-disable-mac-os-x-spaces-animation
+defaults write com.apple.dock expose-animation-duration -int 0; killall Dock
+
+
