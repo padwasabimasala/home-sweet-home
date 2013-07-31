@@ -5,6 +5,8 @@ export PATH=".:./bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/lo
 export CDPATH=".:..:~/:~/src"
 export PYTHONPATH=".:..:$PYTHONPATH"
 export PYTHONSTARTUP="$HOME/.pythonrc.py"
+export AUTH_FILE=~/.auth
+export GOPATH=~/.go
 
 # http://www.catonmat.net/blog/the-definitive-guide-to-bash-command-line-history/
 # make bash ignore duplicate commands, commands that begin with a space, and the ‘exit’ command.
@@ -41,6 +43,7 @@ __source_if .octannerrc
 __source_if ~/.nvm/nvm.sh
 __source_if /usr/local/etc/bash_completion
 __source_if ~/.nvm/nvm.sh
+__source_if ~/.env
 
 __path_if /usr/local/heroku/bin
   
@@ -54,6 +57,12 @@ eval "$(rbenv init -)"
 source ~/.git-completion.bash
 complete -o default -o nospace -F _git g # ~/bin/g
 
+alias gb='git branch'
+complete -o default -o nospace -F _git_branch gb
+
+alias gbd='git branch -D'
+complete -o default -o nospace -F _git_branch gbd
+
 alias gc="git checkout "
 complete -o default -o nospace -F _git_checkout gc
 
@@ -63,12 +72,15 @@ complete -o default -o nospace -F _git_merge gx
 alias gz='git rebase'
 complete -o default -o nospace -F _git_rebase gz
 
-alias gs='git status'
-alias gp='git pull'
-alias gn='git clone'
-alias gd="git d"
+
 alias gcb='git checkout -b'
 alias gm='git checkout master'
+alias gn='git clone'
+alias gd="git d"
+alias gl="git l"
+alias gza='git rebase --abort'
+alias gs='git status'
+alias gp='git pull'
 
 gfzm ()
 {
@@ -87,6 +99,7 @@ alias l="ls -G"
 alias d="rm -rf"
 alias c="cp -r"
 alias k=rake
+alias b=bundle
 
 alias ls="ls -G "
 alias ll="ls -h -G -l "
@@ -106,10 +119,11 @@ alias rm="rm -f "
 alias du="du -hsc " # disk usage: hunman readable, summary, one file system, total
 alias df="df -h " # df (mounts) human readable
 
-alias lsx="ls -al -G |grep " 
+alias lsx="ls -al -G |grep -i" 
 alias igrep='grep -i '
 alias psgrep="echo 'try psx'"
 alias psx="ps aux|grep "
+alias envx="env |grep -i"
 alias chmox="chmod +x"
 
 alias mget='wget -r -k -t45 -l2 -o log '
@@ -128,22 +142,90 @@ alias wl='wc -l'
 alias h1='head -n1'
 alias h10='head -n10'
 
-alias jcurl='curl -H "Accept: application/json" -H "Content-type: application/json"'
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# Functions
 
 function pidx() {
   ps aux |grep "$@" |grep -v grep |awk '{print $2}'
 }
 
+#alias jcurl='curl -H "Accept: application/json" -H "Content-type: application/json"'
+jcurl() {
+  curl_cmd="curl -H \"Accept: application/json\" -H \"Content-type: application/json\" $@"
+  if test -n $DEBUG; then
+    echo "Running: $curl_cmd"
+  fi
+  eval $curl_cmd
+}
+
+
 oct-api-curl () {
+  # Usage
+  if test -n "$DEBUG"; then
+    echo "Ussge: oct-api-curl resource [app] [curl opts]" 1>&2
+    echo "   $ oct-api-curl people/11 -v" 1>&2
+    echo "   $ oct-api-curl people/11 oc-minions-test -v" 1>&2
+  fi
+
   resource=$1
   shift
-  jcurl -H "Authorization: Token token=$(grep api.octanner.com ~/.auth| cut -d' ' -f2)" https://api.octanner.com/$resource $@
+
+  app=$1
+  # Assune env prod if app is empty or begins with - (dash)
+  if test -z $app || test ${app:0:1} = '-'; then
+    app=https://api.thanks.com
+    oct-api-auth
+  # Otherwise env test
+  else
+    if test "$app" == "test"; then
+      app="oc-api-test"
+    fi
+    app=https://$app.herokuapp.com
+    shift
+    oct-api-auth "test"
+  fi
+
+  token="$OCTANNER_AUTH_TOKEN"
+
+  jcurl -H "Authorization: Token token=$token" $app/$resource $@
+}
+
+oct-api-auth () {
+  token=$(eve-token $1)
+  export OCTANNER_AUTH_TOKEN=$token
+}
+
+heroku-db() { 
+  app=$1
+  url=$(heroku config -a "$app" |grep DATABASE_URL)
+  conf=$(expr "$url" : ".*postgres://\(.*\)")
+
+  echo conf : $conf
+
+  user=$(expr "$conf" : "^\([^:]*\):")
+
+  echo user : $user
+
+  pass=$(expr "$conf" : "^.*:\([^@]*\)@")
+
+  echo pass : $pass
+
+  host=$(expr "$conf" : "^.*@\([^:]*\):")
+
+  echo host : $host
+
+  port=$(expr "$conf" : "^.*:\([0-9]*\)/")
+
+  echo port : $port
+
+  name=$(expr "$conf" : "^.*[0-9]/\(.*\)")
+
+  echo name : $name
 }
 
 if [[ $(which src-hilite-lesspipe.sh) ]]; then alias cat="src-hilite-lesspipe.sh"; fi
 
-#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-# Functions
 function goog {
   url="http://www.google.com/search?hl=en&source=hp&q=$@&aq=f&aqi=g5&aql=&oq="
   w3m "$url"
@@ -203,7 +285,7 @@ function backmv
 	fi
 }
 
-function qtar {
+function tar-quick {
   tar czf "$1.tgz" $1
 }
 
@@ -243,7 +325,7 @@ filter () {
    eval $CMD
 }
 
-hg () { # Grep Bash History
+bhg () { # Grep Bash History
   grep $@ ~/.bash_history
 }
    
@@ -338,3 +420,4 @@ case 'id -u' in
   *) PS1="${PS1}$ ";;
 esac
 export PS1
+
