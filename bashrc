@@ -153,19 +153,18 @@ function pidx() {
 #alias jcurl='curl -H "Accept: application/json" -H "Content-type: application/json"'
 jcurl() {
   curl_cmd="curl -H \"Accept: application/json\" -H \"Content-type: application/json\" $@"
-  if test -n $DEBUG; then
+  if test -n "$DEBUG"; then
     echo "Running: $curl_cmd"
   fi
   eval $curl_cmd
 }
-
 
 oct-api-curl () {
   # Usage
   if test -n "$DEBUG"; then
     echo "Ussge: oct-api-curl resource [app] [curl opts]" 1>&2
     echo "   $ oct-api-curl people/11 -v" 1>&2
-    echo "   $ oct-api-curl people/11 oc-minions-test -v" 1>&2
+    echo "   $ oct-api-curl people/11 app-name -v" 1>&2
   fi
 
   resource=$1
@@ -188,7 +187,7 @@ oct-api-curl () {
 
   token="$OCTANNER_AUTH_TOKEN"
 
-  jcurl -H "Authorization: Token token=$token" $app/$resource $@
+  jcurl -H \"Authorization: Token token=$token\" $app/$resource $@
 }
 
 oct-api-auth () {
