@@ -156,7 +156,7 @@ jcurl() {
   if test -n "$DEBUG"; then
     echo "Running: $curl_cmd"
   fi
-  eval $curl_cmd
+  eval "$curl_cmd"
 }
 
 oct-api-curl () {
