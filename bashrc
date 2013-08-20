@@ -358,9 +358,8 @@ alias wp="watch_processes"
 # Remove log, tmp, bak files
 function cleanup {
   rm *.log *.tmp *.bak
-  if [[ $1 == "-A" ]]; then
-    rm *.swp *.swo
-  fi
+  find ./ -name '.**.swp' -exec rm {} +
+  find ./ -name '.**.swo' -exec rm {} +
 }
 
 # Open a new terminal (gnome)
