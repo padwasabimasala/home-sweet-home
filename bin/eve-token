@@ -5,6 +5,17 @@ else
   host=api.thanks.com
 fi
 
-json=$(curl -s -d "grant_type=password" -d "username=adam.tanner@octanner.com" -d "password=iloveapples" "abc123:ssh-secret@$host/oauth/token")
+USERNAME="adam.tanner@octanner.com"
+PASSWORD="iloveapples"
+
+if test "OCT_API_COMPANY" = "OSKO"; then
+  USERNAME=padwasabimasala@gmail.com
+  PASSWORD=password
+fi
+
+USERNAME=padwasabimasala@gmail.com
+PASSWORD=password
+
+json=$(curl -s -d "grant_type=password" -d "username=$USERNAME" -d "password=$PASSWORD" "abc123:ssh-secret@$host/oauth/token")
 token=$(expr "$json" : '.*"access_token":"\([^"]*\)"')
 echo $token
