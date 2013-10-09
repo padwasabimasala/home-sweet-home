@@ -5,16 +5,8 @@ else
   host=api.thanks.com
 fi
 
-USERNAME="adam.tanner@octanner.com"
-PASSWORD="iloveapples"
-
-if test "OCT_API_COMPANY" = "OSKO"; then
-  USERNAME=padwasabimasala@gmail.com
-  PASSWORD=password
-fi
-
-USERNAME=padwasabimasala@gmail.com
-PASSWORD=password
+USERNAME=""
+PASSWORD=""
 
 json=$(curl -s -d "grant_type=password" -d "username=$USERNAME" -d "password=$PASSWORD" "abc123:ssh-secret@$host/oauth/token")
 token=$(expr "$json" : '.*"access_token":"\([^"]*\)"')
