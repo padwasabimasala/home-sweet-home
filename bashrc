@@ -100,6 +100,7 @@ alias d="rm -rf"
 alias c="cp -r"
 alias k=rake
 alias b=bundle
+alias be="bundle exec"
 
 alias ls="ls -G "
 alias ll="ls -h -G -l "
@@ -369,9 +370,9 @@ function newterm {
 alias nt=newterm
 
 # http://machine-cycle.blogspot.com/2007/10/syntax-highlighting-pager.html
-if [[ -s /usr/share/vim/vim72/macros/less.sh ]]; then 
+if [[ -s /usr/share/vim/vim73/macros/less.sh ]]; then 
   - () {
-   /usr/share/vim/vim72/macros/less.sh "$*"
+   /usr/share/vim/vim73/macros/less.sh "$*"
   }
 fi
 
@@ -419,3 +420,11 @@ case 'id -u' in
 esac
 export PS1
 
+
+# OCTANNER For NTP build
+
+export JAVA_HOME=/Library/Java/Home
+export ANT_HOME=/usr/bin/ant
+export ANT_OPTS="-Xmx2048M -XX:MaxPermSize=512m" # per paul porter
+export MAVEN_HOME=/usr/share/maven
+export JBOSS_HOME=~/src/ntp/jboss
