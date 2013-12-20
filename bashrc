@@ -1,4 +1,5 @@
 # ENV ------------------------------------------------------------------------------------------------------
+export PATH="" # Always reset path so changes and rcreload take priority in already open shells
 export TERM=xterm-256color
 export EDITOR=vim
 export PATH=".:./bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin:$PATH"
@@ -13,15 +14,15 @@ export GOPATH=~/.go
 export HISTIGNORE="&:[ ]*:exit"
 
 # http://www.oreillynet.com/onlamp/blog/2007/01/whats_in_your_bash_history.html
-# posterity demmands a long history ;) cut -f1 -d" " .bash_history | sort | uniq -c | sort -nr | head -n 30 
+# posterity demmands a long history ;) cut -f1 -d" " .bash_history | sort | uniq -c | sort -nr | head -n 30
 export HISTFILESIZE=100000000
 export HISTSIZE=100000000
 
 # append to history file, don't overwrite
-shopt -s histappend 
+shopt -s histappend
 
 # Whenever displaying prompt, write last line to disk
-PROMPT_COMMAND="history -a" 
+PROMPT_COMMAND="history -a"
 
 source ~/.titlebar
 source ~/.dircolors
@@ -30,13 +31,13 @@ source ~/.rake-completion.bash
 __source_if() {
 	if [ -e $1 ]; then
 		source $1
-	fi 
+	fi
 }
 
 __path_if() {
 	if [ -e $1 ]; then
 		export PATH=$PATH:$1
-	fi 
+	fi
 }
 
 __source_if .octannerrc
@@ -46,7 +47,7 @@ __source_if ~/.nvm/nvm.sh
 __source_if ~/.env
 
 __path_if /usr/local/heroku/bin
-  
+
 eval "$(rbenv init -)"
 
 # GIT  ------------------------------------------------------------------------------------------------------
@@ -72,6 +73,9 @@ complete -o default -o nospace -F _git_merge gx
 alias gz='git rebase'
 complete -o default -o nospace -F _git_rebase gz
 
+alias gdl='git dl'
+
+alias gdc='git dc'
 
 alias gcb='git checkout -b'
 alias gm='git checkout master'
@@ -120,7 +124,7 @@ alias rm="rm -f "
 alias du="du -hsc " # disk usage: hunman readable, summary, one file system, total
 alias df="df -h " # df (mounts) human readable
 
-alias lsx="ls -al -G |grep -i" 
+alias lsx="ls -al -G |grep -i"
 alias igrep='grep -i '
 alias psgrep="echo 'try psx'"
 alias psx="ps aux|grep "
@@ -143,8 +147,7 @@ alias wl='wc -l'
 alias h1='head -n1'
 alias h10='head -n10'
 
-
-#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Functions
 
 function pidx() {
@@ -196,7 +199,7 @@ oct-api-auth () {
   export OCTANNER_AUTH_TOKEN=$token
 }
 
-heroku-db() { 
+heroku-db() {
   app=$1
   url=$(heroku config -a "$app" |grep DATABASE_URL)
   conf=$(expr "$url" : ".*postgres://\(.*\)")
@@ -272,10 +275,10 @@ function backmv
 			fi
 			i=$(( $i+1 ))
 		done
-		
+
 		# Get the date to append to the file
 		date=$(date +"%Y%m%d")
-		
+
 		# Copy the files
 		for file in $files; do
 			# Get the last portion of the file as filename
@@ -328,9 +331,9 @@ filter () {
 bhg () { # Grep Bash History
   grep $@ ~/.bash_history
 }
-   
+
 function findreplace {
-  usage="findreplace findstr replacestr file [file...]" 
+  usage="findreplace findstr replacestr file [file...]"
   if [ $# -lt 2 ]; then
     echo $usage
     return 1
@@ -370,17 +373,17 @@ function newterm {
 alias nt=newterm
 
 # http://machine-cycle.blogspot.com/2007/10/syntax-highlighting-pager.html
-if [[ -s /usr/share/vim/vim73/macros/less.sh ]]; then 
+if [[ -s /usr/share/vim/vim73/macros/less.sh ]]; then
   - () {
    /usr/share/vim/vim73/macros/less.sh "$*"
   }
 fi
 
 function q {
-  USER=$(grep ono-leads-db1 ~/.authinfo| awk '{print $2}') 
-  PASS=$(grep ono-leads-db1 ~/.authinfo| awk '{print $3}') 
-  HOST=$(grep ono-leads-db1 ~/.authinfo| awk '{print $4}') 
-  DB=$(grep ono-leads-db1 ~/.authinfo| awk '{print $5}') 
+  USER=$(grep ono-leads-db1 ~/.authinfo| awk '{print $2}')
+  PASS=$(grep ono-leads-db1 ~/.authinfo| awk '{print $3}')
+  HOST=$(grep ono-leads-db1 ~/.authinfo| awk '{print $4}')
+  DB=$(grep ono-leads-db1 ~/.authinfo| awk '{print $5}')
   SQL="$@"
   mysql -h$HOST -u$USER -p$PASS $DB -B -e "$SQL" # -B is tabdelim
 }
@@ -404,9 +407,19 @@ function heroku-psql {
   bash -c "$(heroku config -a $1 |grep DATABASE_URL |ruby -e 'STDIN.first =~ %r(DATA.*://(\w+):(\w+)@(.+):(\d+)/(\w+)); puts "PGPASSWORD=#{$2} psql -h #{$3} -U #{$1} -p #{$4} #{$5}"')"
 }
 
+function auth {
+  grep $1 $AUTH_FILE
+}
+
+function clone {
+  cd ~/src
+  git clone git@github.com:$1/$2.git
+  cd $2
+}
+
 # Hrrrm this is getting overridden by something above so I moved it to the bottom
 __my_git_ps1 ()
-{ 
+{
   local b="$(git reflog 2> /dev/null |grep checkout: |head -n1 |awk '{print $8}' 2> /dev/null)"
   if [ -n "$b" ]; then
     printf " ($b)"
@@ -420,11 +433,28 @@ case 'id -u' in
 esac
 export PS1
 
+export PATH=$PATH:/usr/local/share/npm/bin
+export PATH=$PATH:~/vendor/play-2.2.1
+export PATH=$PATH:/usr/local/share/python # livereload
 
-# OCTANNER For NTP build
-
-export JAVA_HOME=/Library/Java/Home
-export ANT_HOME=/usr/bin/ant
-export ANT_OPTS="-Xmx2048M -XX:MaxPermSize=512m" # per paul porter
-export MAVEN_HOME=/usr/share/maven
-export JBOSS_HOME=~/src/ntp/jboss
+# export NTP_DIR=~/src/ntp
+# export JAVA_HOME=/Library/Java/Home
+# export CATALINA_HOME=/Library/Tomcat/Home
+# export JBOSS_HOME=$NTP_DIR/jboss
+# export ANT_HOME=$NTP_DIR/$ANT_DIST
+# export ANT_OPTS=-Xmx2048m
+# export PATH=$ANT_HOME/bin:$PATH
+# export MAVEN_HOME=$NTP_DIR/$MAVEN_DIST
+# export MAVEN_OPTS='-Xmx512m -XX:MaxPermSize=384m'
+# export PATH=$MAVEN_HOME/bin:$PATH
+# export TOKEN_HEX_KEY=81ca9f21318178682b924246f3812b99c61cb0a7989efabdd4254589b112ea9a
+# export ADVRPT_DB_URL="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=edwdev.octanner.com)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=edwdev))))"
+# export ADVRPT_DB_USER=olap
+# export ADVRPT_DB_PASSWORD=olap
+# export NTP_URL=https://dev.appreciatehub.com
+export PATH=$PATH:/Users/matthew.thorley/src/perfect/bin
+alias p='source /Users/matthew.thorley/src/perfect/bin/perfect'
+export PATH=$PATH:/Users/matthew.thorley/.perfect/bin
+alias perfect='source /Users/matthew.thorley/.perfect/bin/perfect'
+export PATH=$PATH:/Users/matthew.thorley/.perfect/bin
+alias perfect='source /Users/matthew.thorley/.perfect/bin/perfect'
