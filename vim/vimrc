@@ -8,7 +8,7 @@
 " http://nvie.com/posts/how-i-boosted-my-vim/
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Notes 
+" Notes
 "
 " map:  normal and visual mode
 " map!: insert and cmd-line mode
@@ -16,7 +16,7 @@
 " vmap: visual mode
 "
 " Terminal Colors
-" 
+"
 " For iterm2 under the termminatl tab in preferences set the identifier to xterm-256color
 "
 " Ruby Blocks
@@ -32,7 +32,15 @@ if &term =~# '^\(screen\|xterm\)$'
   set t_Co=256
 endif
 
-set shellcmdflag=-c 
+" https://github.com/sunaku/.vim/blob/config/config/color.vim#L11-L16
+if &term =~ '256color'
+  " disable Background Color Erase (BCE) so that color schemes
+  " render properly when inside 256-color tmux and GNU screen.
+  " see also http://snk.tuxfamily.org/log/vim-256color-bce.html
+  set t_ut=
+endif
+
+set shellcmdflag=-c
 
 " Required for vim-textobj-rubyblock
 runtime macros/matchit.vim
@@ -41,7 +49,7 @@ if has("autocmd")
 endif
 
 syntax on
-set backspace=2   
+set backspace=2
 set ts=2
 set sw=2
 set sts=2
@@ -59,6 +67,7 @@ set pastetoggle=<F2>
 set modeline " Show filename in bar
 set ls=2
 colorscheme elflord
+colorscheme distinguished
 hi Operator        guifg=#6699CC     guibg=NONE        gui=NONE      ctermfg=lightblue   ctermbg=NONE        cterm=NONE
 
 let mapleader=","
@@ -98,6 +107,11 @@ nmap Q gqap
 nmap <silent> <leader>ev :e $MYVIMRC<CR>
 " TODO : make this work as :reload
 nmap <silent> <leader>sv :so $MYVIMRC<CR>
+
+" rspec the current file
+" TODO make this find spec for current file if it is not spec
+nmap <silent> <leader>r :! rspec %<CR>
+nmap <silent> <leader>R :! rspec <CR>
 
 " remember between sessions, but only 10 search terms; also
 " remember info for 10 files, but never any on removable disks, don't remember
