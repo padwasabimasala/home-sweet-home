@@ -25,33 +25,64 @@
 	name = Matthew Thorley
 	email = padwasabimasala@gmail
 [alias]
+  # Edit this file quickly
+  rcedit = "! /usr/bin/env vim ~/.gitconfig"
+
+  # Clean up in a hurry without reservation
+  bomb = "!git reset --hard && git clean -df"
+
+  # Standard abbreviations
   a = add
   b = branch
-  bomb = "!git reset --hard && git clean -df"
   c = checkout
-  cam = commit -am
   cm = commit
   d = diff --color
-  dc = diff --color --cached
-  # http://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-are-already-merged
-  # FIXME
-  # delete-merged = "!git branch --merged | grep -v '\*' | xargs -n 1 git branch -d"
-  l =  log --abbrev-commit --date=short --pretty=format:'%h  %cd  "%s" -- %an'
-  lg = "!git log --abbrev-commit --date=short --pretty=format:'-SEP-%h-SEP-%cd-SEP-%s-SEP-%an-SEP-%d' | awk -F '-SEP-' '{ printf \"%s\\033[31m%s\\033[0m \\033[32m%s\\033[0m   %-100s \\033[30;1m%s\\033[0m\\033[33m%s\\n\", $1, $2, $3, $4, $5, $6 }'|less -R"
-  lga = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-  untracked = "ls-files --other --exclude-standard"
-  ignore = update-index --assume-unchanged
+  l = "!git log --abbrev-commit --date=short --pretty=format:'-SEP-%h-SEP-%cd-SEP-%s-SEP-%an-SEP-%d' | awk -F '-SEP-' '{ printf \"%s\\033[31m%s\\033[0m \\033[32m%s\\033[0m   %-70s \\033[30;1m%s\\033[0m\\033[33m%s\\n\", $1, $2, $3, substr($4,0,70), $5, $6 }'|less -R"
   p = pull
   r = revert
-  rh = reset --hard
-  # http://www.commandlinefu.com/commands/view/2345/show-git-branches-by-date-useful-for-showing-active-branches
-  recent-branches = "!for k in `git branch|perl -pe s/^..//`;do echo `git show --pretty=format:'%Cgreen%ci %Cblue%cr%Creset' $k|head -n 1`\t$k;done|sort -r"
-  # http://stackoverflow.com/questions/1161609/in-git-how-can-i-get-the-diff-between-all-the-commits-that-occured-between-two
-  recent-changes = "!git diff --color $(git rev-list -n1 --before=\"1 day ago\" master)"
   s = status
-  unadd = reset HEAD
+  x = rebase
+
+  # Branches
+  bd = branch -D
+  branch-delete = branch -D
+  branch-delete-merged = "!git branch --merged |grep -v '*' |xargs -n 1 git branch -d" # http://stackoverflow.com/questions/6127328/how-can-i-delete-all-git-branches-which-are-already-merged
+  branch-delete-all = "!git branch |grep -v '*' |xargs -n 1 git branch -D"
+  branch-show-recent = "!for k in `git branch|perl -pe s/^..//`;do echo `git show --pretty=format:'%Cgreen%ci %Cblue%cr%Creset' $k|head -n 1`\t$k;done|sort -r" # http://www.commandlinefu.com/commands/view/2345/show-git-branches-by-date-useful-for-showing-active-branches
+
+  # Committing
+  cam = commit -am
+  commit-into-last = "!git reset --soft HEAD^ && git commit -am "
   undo-last-commit  = reset --soft HEAD^
+  merge-last-two-commits = "!msg=$(git log -n1 --pretty=oneline --abbrev-commit |cut -d' ' -f2) && git reset --soft HEAD~2 && git commit -am \"$msg\""
+
+  # Diffing
+  diff-cached = diff --color --cached
+  dc = diff --color --cached
+  diff-last = diff --color HEAD~1
+  dl = diff --color HEAD~1
+  recent-changes = "!git diff --color $(git rev-list -n1 --before=\"1 day ago\" master)" # http://stackoverflow.com/questions/1161609/in-git-how-can-i-get-the-diff-between-all-the-commits-that-occured-between-two
+
+  # Ignore and Unignore
+  ignore = update-index --assume-unchanged
   unignore = update-index --no-assume-unchanged
+
+  # Log styles
+  log-long = "!git log --abbrev-commit --date=short --pretty=format:'-SEP-%h-SEP-%cd-SEP-%s-SEP-%an-SEP-%d' | awk -F '-SEP-' '{ printf \"%s\\033[31m%s\\033[0m \\033[32m%s\\033[0m   %-250s \\033[30;1m%s\\033[0m\\033[33m%s\\n\", $1, $2, $3, $4, $5, $6 }'|less -R"
+  log-stat = log --color --stat
+  log-tree = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+
+  # Rebasing
+  xh2 = rebase -i HEAD~2
+  xh3 = rebase -i HEAD~3
+  xh4 = rebase -i HEAD~4
+  xh5 = rebase -i HEAD~5
+
+  # Etc
+  remotes = remote -v
+  rh = reset --hard
+  unadd = reset HEAD
+  untracked = "ls-files --other --exclude-standard"
 [core]
 	editor = /usr/bin/vim
 [push]
