@@ -13,7 +13,6 @@ if [ "$PS1" ]; then
     #fi
     case $TERM in
       *xterm* | dtterm | *vt100* | *linux* | *cyg* )
-        [ `uname -s` = "SunOS" ] && TERM=dtterm || TERM=xterm
         HOST=`hostname |sed 's/\..*$//g'`
         PROMPT_COMMAND='echo -ne "\033]0;${LOGNAME}@${HOST}: ${PWD}\007"'
         PS1='\[\033[0;32m\]\u@\h\[\033[0;31m\]\!\[\033[0;34m\]:\W\$\[\033[0;38m\] '
