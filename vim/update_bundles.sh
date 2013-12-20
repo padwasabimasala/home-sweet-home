@@ -15,18 +15,24 @@ get_bundle() {
 mkdir -p $BUNDLE_DIR
 cd $BUNDLE_DIR
 get_bundle vim-irblack wgibbs  # ir_black color scheme
+get_bundle jellybeans.vim nanotech # Jelly Beans colors scheme
+get_bundle vim-vividchalk tpope # Color scheme
+get_bundle vim-candy padwasabimasala # colors
+get_bundle vim-colors-solarized altercation # colors
 get_bundle tcomment_vim tomtom # Use cnt-_ _ to comment line or block
 get_bundle vim-matchit tsaleh
 get_bundle vim-textobj-user kana
 get_bundle vim-textobj-rubyblock nelstrom # use var/vir to select ruby blocks
 get_bundle vim-trailing-whitespace bronson # Highlights trailing whitespace. Use :FixWhiteSpace to delete
+get_bundle vim-surround tpope
+get_bundle vim-distinguished Lokaltog
 
 # Fuzzy finders. Neither of which seems to work as well as sublime/textmate :(
-get_bundle ctrlp.vim kien
+#get_bundle ctrlp.vim kien
 #get_bundle L9 vim-scripts
 #get_bundle FuzzyFinder vim-scripts
-
 #get_bundle Command-T wincent # requires compilation and was totally broken last time attempted
+
 #get_bundle vim-abolish sensible
 #get_bundle tabular godlygeek
 #get_bundle ack.vim mileszs
@@ -43,7 +49,5 @@ get_bundle ctrlp.vim kien
 #get_bundle vim-repeat tpope
 #get_bundle vim-ruby vim-ruby
 #get_bundle vim-speeddating tpope
-get_bundle vim-surround tpope
 #get_bundle vim-vividchalk tpope
-#get_bundle vim-colors-solarized altercation
 #get_bundle ctrlp.vim kien
