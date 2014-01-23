@@ -52,9 +52,9 @@
 
   # Committing
   cam = commit -am
-  commit-into-last = "!git reset --soft HEAD^ && git commit -am "
+  commit-into-last = "!msg=$(git log -n1 --pretty=oneline --abbrev-commit |cut -d' ' -f2-) && git reset --soft HEAD^ && git commit -am \"$msg\""
   undo-last-commit  = reset --soft HEAD^
-  merge-last-two-commits = "!msg=$(git log -n1 --pretty=oneline --abbrev-commit |cut -d' ' -f2) && git reset --soft HEAD~2 && git commit -am \"$msg\""
+  merge-last-two-commits = "!msg=$(git log -n1 --pretty=oneline --abbrev-commit |cut -d' ' -f2-) && git reset --soft HEAD~2 && git commit -am \"$msg\""
 
   # Diffing
   diff-cached = diff --color --cached
@@ -79,6 +79,7 @@
   xh5 = rebase -i HEAD~5
 
   # Etc
+  amend = commit --amend
   remotes = remote -v
   rh = reset --hard
   unadd = reset HEAD
