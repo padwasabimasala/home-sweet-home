@@ -9,7 +9,7 @@ Dir.glob(File.expand_path(File.dirname __FILE__) + "/.gem/gems/*").each {|p| $: 
 
 require 'rubygems'
 require 'irb/completion'
-require 'irb/ext/save-history'
+require 'irb/ext/save-history' rescue nil
 require 'wirble'
 require 'utility_belt'
 require 'ap'
