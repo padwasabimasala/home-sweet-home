@@ -1,8 +1,7 @@
 # ENV ------------------------------------------------------------------------------------------------------
-export PATH="" # Always reset path so changes and rcreload take priority in already open shells
+export PATH=".:./bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
 export TERM=xterm-256color
 export EDITOR=vim
-export PATH=".:./bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin:$PATH"
 export CDPATH=".:..:~/:~/src"
 export PYTHONPATH=".:..:$PYTHONPATH"
 export PYTHONSTARTUP="$HOME/.pythonrc.py"
@@ -17,16 +16,17 @@ export HISTIGNORE="&:[ ]*:exit"
 # posterity demmands a long history ;) cut -f1 -d" " .bash_history | sort | uniq -c | sort -nr | head -n 30
 export HISTFILESIZE=100000000
 export HISTSIZE=100000000
-
+# http://unix.stackexchange.com/questions/1288/preserve-bash-history-in-multiple-terminal-windows
+export HISTCONTROL=ignoredups:erasedups
 # append to history file, don't overwrite
 shopt -s histappend
-
-# Whenever displaying prompt, write last line to disk
-PROMPT_COMMAND="history -a"
+# After each command, save and reload history
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 source ~/.titlebar
 source ~/.dircolors
 source ~/.rake-completion.bash
+source `brew --repository`/Library/Contributions/brew_bash_completion.sh
 
 __source_if() {
 	if [ -e $1 ]; then
@@ -40,12 +40,14 @@ __path_if() {
 	fi
 }
 
-__source_if .octannerrc
-__source_if ~/.nvm/nvm.sh
 __source_if /usr/local/etc/bash_completion
 __source_if ~/.nvm/nvm.sh
 __source_if ~/.env
+__source_if ~/.ntpapirc
 
+__path_if /usr/local/share/npm/bin
+__path_if ~/vendor/play-2.2.1
+__path_if /usr/local/share/python # livereload
 __path_if /usr/local/heroku/bin
 
 eval "$(rbenv init -)"
@@ -404,7 +406,12 @@ EOF
 }
 
 function heroku-psql {
-  bash -c "$(heroku config -a $1 |grep DATABASE_URL |ruby -e 'STDIN.first =~ %r(DATA.*://(\w+):(\w+)@(.+):(\d+)/(\w+)); puts "PGPASSWORD=#{$2} psql -h #{$3} -U #{$1} -p #{$4} #{$5}"')"
+  local app=$1
+  echo "Connecting to app $1"
+  shift
+  local cmd="$(heroku config -a $app |grep DATABASE_URL |ruby -e 'STDIN.first =~ %r(DATA.*://(\w+):(\w+)@(.+):(\d+)/(\w+)); puts "PGPASSWORD=#{$2} psql -h #{$3} -U #{$1} -p #{$4} EXTRA_ARGS #{$5}"')"
+  bash -c "${cmd/EXTRA_ARGS/$@}"
+  #bash -c "$(heroku config -a $app |grep DATABASE_URL |ruby -e 'STDIN.first =~ %r(DATA.*://(\w+):(\w+)@(.+):(\d+)/(\w+)); puts "PGPASSWORD=#{$2} psql -h #{$3} -U #{$1} -p #{$4} $@ #{$5}"')"
 }
 
 function auth {
@@ -415,6 +422,20 @@ function clone {
   cd ~/src
   git clone git@github.com:$1/$2.git
   cd $2
+}
+
+function todo {
+  open https://gist.github.com/padwasabimasala/af14263ddd15b74c1397
+}
+
+# http://mac-user-blog.blogspot.com/2012/08/enabling-ftp-on-with-mountain-lion.html
+
+ftp-on() {
+  sudo -s launchctl load -w /System/Library/LaunchDaemons/ftp.plist
+}
+
+ftp-off() {
+  sudo -s launchctl unload -w /System/Library/LaunchDaemons/ftp.plist
 }
 
 # Hrrrm this is getting overridden by something above so I moved it to the bottom
@@ -433,28 +454,7 @@ case 'id -u' in
 esac
 export PS1
 
-export PATH=$PATH:/usr/local/share/npm/bin
-export PATH=$PATH:~/vendor/play-2.2.1
-export PATH=$PATH:/usr/local/share/python # livereload
-
-# export NTP_DIR=~/src/ntp
-# export JAVA_HOME=/Library/Java/Home
-# export CATALINA_HOME=/Library/Tomcat/Home
-# export JBOSS_HOME=$NTP_DIR/jboss
-# export ANT_HOME=$NTP_DIR/$ANT_DIST
-# export ANT_OPTS=-Xmx2048m
-# export PATH=$ANT_HOME/bin:$PATH
-# export MAVEN_HOME=$NTP_DIR/$MAVEN_DIST
-# export MAVEN_OPTS='-Xmx512m -XX:MaxPermSize=384m'
-# export PATH=$MAVEN_HOME/bin:$PATH
-# export TOKEN_HEX_KEY=81ca9f21318178682b924246f3812b99c61cb0a7989efabdd4254589b112ea9a
-# export ADVRPT_DB_URL="jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=edwdev.octanner.com)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=edwdev))))"
-# export ADVRPT_DB_USER=olap
-# export ADVRPT_DB_PASSWORD=olap
-# export NTP_URL=https://dev.appreciatehub.com
+# Perfect (ntp installer) setup
 export PATH=$PATH:/Users/matthew.thorley/src/perfect/bin
 alias p='source /Users/matthew.thorley/src/perfect/bin/perfect'
-export PATH=$PATH:/Users/matthew.thorley/.perfect/bin
-alias perfect='source /Users/matthew.thorley/.perfect/bin/perfect'
-export PATH=$PATH:/Users/matthew.thorley/.perfect/bin
-alias perfect='source /Users/matthew.thorley/.perfect/bin/perfect'
+export PATH=$PATH:~/src/ci-shortcut
