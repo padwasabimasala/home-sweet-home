@@ -23,6 +23,16 @@
 "
 " Select a whole outter block with var or inner block with vir
 "
+" Syntax Check - enable/disable
+"
+" :SyntasticToggleMode t
+"
+" Indent HTML
+" :filetype indent on
+" :set filetype=html
+" :set smartindent
+" gg=G
+"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 set nocompatible
