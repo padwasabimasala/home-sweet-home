@@ -1,5 +1,5 @@
 # ENV ------------------------------------------------------------------------------------------------------
-export PATH=".:./bin:~/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
+export PATH=".:./bin:~/bin:./var:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
 export TERM=xterm-256color
 export EDITOR=vim
 export CDPATH=".:..:~/:~/src"
@@ -107,6 +107,7 @@ alias c="cp -r"
 alias k=rake
 alias b=bundle
 alias be="bundle exec"
+alias h="heroku"
 
 alias ls="ls -G "
 alias ll="ls -h -G -l "
@@ -442,16 +443,25 @@ ftp-off() {
 __my_git_ps1 ()
 {
   local b="$(git reflog 2> /dev/null |grep checkout: |head -n1 |awk '{print $8}' 2> /dev/null)"
+  local local_changes="$(git diff --numstat |wc -l)"
+  local cached_changes="$(git diff --cached --numstat |wc -l)"
+  local color="0;32m"
+
+  if test $local_changes != 0 || test $cached_changes != 0; then
+    color="1;33m"
+  fi
+
+  if test $local_changes != 0 && test $cached_changes != 0; then
+    color="1;31m"
+  fi
+
   if [ -n "$b" ]; then
-    printf " ($b)"
+    printf " (\033[$color$b\033[0m)"
   fi
 }
 
-PS1='\u@\h \W$(__my_git_ps1)'
-case 'id -u' in
-  0) PS1="${PS1}# ";;
-  *) PS1="${PS1}$ ";;
-esac
+PROMPT_CHAR=✧
+PS1='\[\033[0;35m\]$PROMPT_CHAR \[\033[0m\]\u@\h \W$(__my_git_ps1) '
 export PS1
 
 # Perfect (ntp installer) setup
