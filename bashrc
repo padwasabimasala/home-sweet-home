@@ -443,8 +443,8 @@ ftp-off() {
 __my_git_ps1 ()
 {
   local b="$(git reflog 2> /dev/null |grep checkout: |head -n1 |awk '{print $8}' 2> /dev/null)"
-  local local_changes="$(git diff --numstat |wc -l)"
-  local cached_changes="$(git diff --cached --numstat |wc -l)"
+  local local_changes="$(git diff --numstat 2> /dev/null |wc -l)"
+  local cached_changes="$(git diff --cached --numstat 2> /dev/null |wc -l)"
   local color="0;32m"
 
   if test $local_changes != 0 || test $cached_changes != 0; then
@@ -460,9 +460,25 @@ __my_git_ps1 ()
   fi
 }
 
-PROMPT_CHAR=✧
-PS1='\[\033[0;35m\]$PROMPT_CHAR \[\033[0m\]\u@\h \W$(__my_git_ps1) '
+# https://bbs.archlinux.org/viewtopic.php?id=109234
+
+__my_next_hue() {
+  __prompt_color=$((31 + (++color % 7)))
+}
+
+__my_prompt_leader() {
+  local prompt_char="✧"
+  printf "\033[0;${__prompt_color}m${prompt_char} \033[0m"
+}
+
+__my_prompt_command() {
+  history -a; history -n; history -c; history -r;
+  __my_next_hue
+}
+
+PS1='$(__my_prompt_leader)\u@\h \W$(__my_git_ps1) '
 export PS1
+export PROMPT_COMMAND="__my_prompt_command"
 
 # Perfect (ntp installer) setup
 export PATH=$PATH:/Users/matthew.thorley/src/perfect/bin
