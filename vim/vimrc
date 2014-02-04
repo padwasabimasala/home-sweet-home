@@ -121,7 +121,10 @@ nmap <silent> <leader>sv :so $MYVIMRC<CR>
 " rspec the current file
 " TODO make this find spec for current file if it is not spec
 nmap <silent> <leader>r :! rspec %<CR>
-nmap <silent> <leader>R :! rspec <CR>
+nmap <silent> <leader>R :! bundle exec rspec <CR>
+nmap <silent> <leader>b :! bash %<CR>
+command! RcReload :so $MYVIMRC
+command! RcEdit :new $MYVIMRC
 
 " remember between sessions, but only 10 search terms; also
 " remember info for 10 files, but never any on removable disks, don't remember
