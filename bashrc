@@ -463,17 +463,28 @@ __my_git_ps1 ()
 # https://bbs.archlinux.org/viewtopic.php?id=109234
 
 __my_next_hue() {
-  __prompt_color=$((31 + (++color % 7)))
+  colors=("0;30" "1;30" "0;37" "1;37" "1;36" "0;36" "1;32" "0;32" "0;34" "1;34" "0;35" "1;35" "1;31" "0;31" "0;33" "1;33")
+  __prompt_color=${colors[$((++__prompt_color_idx % 16))]}
+}
+
+__my_check_err() {
+  local last_retval=$1
+  __prompt_char="✧"
+  if test $last_retval != 0; then
+    __prompt_char="-!-"
+    __prompt_color="0;31"
+  fi
 }
 
 __my_prompt_leader() {
-  local prompt_char="✧"
-  printf "\033[0;${__prompt_color}m${prompt_char} \033[0m"
+  printf "\033[0;${__prompt_color}m${__prompt_char} \033[0m"
 }
 
 __my_prompt_command() {
+  local last_retval="$?"
   history -a; history -n; history -c; history -r;
   __my_next_hue
+  __my_check_err $last_retval
 }
 
 PS1='$(__my_prompt_leader)\u@\h \W$(__my_git_ps1) '
