@@ -14,12 +14,13 @@ export GOPATH=~/.go
 # http://unix.stackexchange.com/questions/1288/preserve-bash-history-in-multiple-terminal-windows
 shopt -s histappend
 export HISTIGNORE="&:[ ]*:exit" # ignore dups, commands with leading space, and exit
-export HISTFILESIZE=1000000 # See most used commands with: cut -f1 -d" " .bash_history | sort | uniq -c | sort -nr | head -n 30
+export HISTFILESIZE=1000000 
 export HISTSIZE=1000000
 export HISTCONTROL=ignoreboth # dupes and leading space
 export HISTTIMEFORMAT="%F %T " # Timestamp history
 export PROMPT_COMMAND="history -a; history -c; history -r"
-alias histsync="history -n"
+alias hist-sync="history -n"
+alias hist-report="cut -f1,2 -d\" \" ~/.bash_history | sort | uniq -c | sort -nr | head -n 30"
 
 source ~/.titlebar
 source ~/.dircolors
