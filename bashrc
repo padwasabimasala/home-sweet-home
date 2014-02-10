@@ -8,25 +8,22 @@ export PYTHONSTARTUP="$HOME/.pythonrc.py"
 export AUTH_FILE=~/.auth
 export GOPATH=~/.go
 
+# History configuration
 # http://www.catonmat.net/blog/the-definitive-guide-to-bash-command-line-history/
-# make bash ignore duplicate commands, commands that begin with a space, and the ‘exit’ command.
-export HISTIGNORE="&:[ ]*:exit"
-
 # http://www.oreillynet.com/onlamp/blog/2007/01/whats_in_your_bash_history.html
-# posterity demmands a long history ;) cut -f1 -d" " .bash_history | sort | uniq -c | sort -nr | head -n 30
-export HISTFILESIZE=100000000
-export HISTSIZE=100000000
 # http://unix.stackexchange.com/questions/1288/preserve-bash-history-in-multiple-terminal-windows
-export HISTCONTROL=ignoredups:erasedups
-# append to history file, don't overwrite
 shopt -s histappend
-# After each command, save and reload history
-export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+export HISTIGNORE="&:[ ]*:exit" # ignore dups, commands with leading space, and exit
+export HISTFILESIZE=1000000 # See most used commands with: cut -f1 -d" " .bash_history | sort | uniq -c | sort -nr | head -n 30
+export HISTSIZE=1000000
+export HISTCONTROL=ignoreboth # dupes and leading space
+export HISTTIMEFORMAT="%F %T " # Timestamp history
+export PROMPT_COMMAND="history -a; history -c; history -r"
+alias histsync="history -n"
 
 source ~/.titlebar
 source ~/.dircolors
 source ~/.rake-completion.bash
-source `brew --repository`/Library/Contributions/brew_bash_completion.sh
 
 __source_if() {
 	if [ -e $1 ]; then
@@ -40,6 +37,7 @@ __path_if() {
 	fi
 }
 
+__source_if `brew --repository`/Library/Contributions/brew_bash_completion.sh
 __source_if /usr/local/etc/bash_completion
 __source_if ~/.nvm/nvm.sh
 __source_if ~/.env
@@ -94,20 +92,22 @@ gfzm ()
   git fetch && git rebase origin/master && git checkout $branch
 }
 
-# ALias City ------------------------------------------------------------------------------------------------------
+# Alias City ------------------------------------------------------------------------------------------------------
 alias rcedit='vi ~/.bashrc'
 alias rccommit='git add ~/.bashrc; git commit ~/.bashrc'
 alias rcdiff="git diff HEAD ~/.bashrc"
 alias rcreload="source ~/.bashrc"
 alias vimrcedit="vi ~/.vimrc"
 
-alias l="ls -G"
-alias d="rm -rf"
-alias c="cp -r"
-alias k=rake
 alias b=bundle
 alias be="bundle exec"
+alias c=cd
+alias d="rm -rf"
 alias h="heroku"
+alias k=rake
+alias l="ls -G"
+alias s=rspec
+alias z=rails
 
 alias ls="ls -G "
 alias ll="ls -h -G -l "
@@ -489,7 +489,7 @@ __my_prompt_command() {
 
 PS1='$(__my_prompt_leader)\u@\h \W$(__my_git_ps1) '
 export PS1
-export PROMPT_COMMAND="__my_prompt_command"
+export PROMPT_COMMAND="__my_prompt_command; $PROMPT_COMMAND"
 
 # Perfect (ntp installer) setup
 export PATH=$PATH:/Users/matthew.thorley/src/perfect/bin
