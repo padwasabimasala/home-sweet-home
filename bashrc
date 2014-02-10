@@ -86,6 +86,7 @@ alias gl="git l"
 alias gza='git rebase --abort'
 alias gs='git status'
 alias gp='git pull'
+alias gP='git push'
 
 gfzm ()
 {
