@@ -103,6 +103,8 @@ alias vimrcedit="vi ~/.vimrc"
 
 alias b=bundle
 alias be="bundle exec"
+alias bi='bundle install'
+alias irb=pry
 alias c=cd
 complete -o default -o nospace -F _cd c
 alias d="rm -rf"
@@ -147,7 +149,6 @@ alias psme='ps aux|grep `whoami`'
 alias clear="clear;echo [0m;"
 
 alias tf='tail -f '
-alias bi='bundle install'
 alias print='lp -o cpi=14 -o lpi=10'
 alias wl='wc -l'
 alias h1='head -n1'
