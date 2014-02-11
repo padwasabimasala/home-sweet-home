@@ -14,7 +14,7 @@ export GOPATH=~/.go
 # http://unix.stackexchange.com/questions/1288/preserve-bash-history-in-multiple-terminal-windows
 shopt -s histappend
 export HISTIGNORE="&:[ ]*:exit" # ignore dups, commands with leading space, and exit
-export HISTFILESIZE=1000000 
+export HISTFILESIZE=1000000
 export HISTSIZE=1000000
 export HISTCONTROL=ignoreboth # dupes and leading space
 export HISTTIMEFORMAT="%F %T " # Timestamp history
@@ -96,7 +96,7 @@ gfzm ()
 
 # Alias City ------------------------------------------------------------------------------------------------------
 alias rcedit='vi ~/.bashrc'
-alias rccommit='cd /opt/dotfiles/repo; git add bashrc; git commit bashrc'
+alias rccommit='cd /opt/dotfiles/repo; git add bashrc; git commit bashrc; cd -'
 alias rcdiff="cd /opt/dotfiles/repo; git diff HEAD ~/.bashrc"
 alias rcreload="source ~/.bashrc"
 alias vrcedit="vi ~/.vimrc"
