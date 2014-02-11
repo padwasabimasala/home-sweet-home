@@ -104,6 +104,7 @@ alias vimrcedit="vi ~/.vimrc"
 alias b=bundle
 alias be="bundle exec"
 alias c=cd
+complete -o default -o nospace -F _cd c
 alias d="rm -rf"
 alias h="heroku"
 alias k=rake
