@@ -96,10 +96,10 @@ gfzm ()
 
 # Alias City ------------------------------------------------------------------------------------------------------
 alias rcedit='vi ~/.bashrc'
-alias rccommit='git add ~/.bashrc; git commit ~/.bashrc'
-alias rcdiff="git diff HEAD ~/.bashrc"
+alias rccommit='cd /opt/dotfiles/repo; git add bashrc; git commit bashrc'
+alias rcdiff="cd /opt/dotfiles/repo; git diff HEAD ~/.bashrc"
 alias rcreload="source ~/.bashrc"
-alias vimrcedit="vi ~/.vimrc"
+alias vrcedit="vi ~/.vimrc"
 
 alias b=bundle
 alias be="bundle exec"
