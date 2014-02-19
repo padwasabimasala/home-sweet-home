@@ -10,6 +10,7 @@ sub get_book($$);
 my $Usage = <<'END';
 bible-ref: a program to look up Bible references and search for verses.
 Copyright (C) 1999 Martin Ward
+Some modifications by Matthew Thorley
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -49,7 +50,7 @@ $SIG{PIPE} = 'IGNORE';
 my $help = "Try `ref --help' for more information.\n";
 
 my $lastverse = 176; 	# The largest possible verse number (Psalm 119:176)
-my $linelen = 78;	# Maximum line length
+my $linelen = 120;	# Maximum line length
 
 # Abbreviations of book names in various languages:
 
@@ -63,11 +64,6 @@ my %abbr = qw(gn genesis lv leviticus dt deuteronomy
 
 grep { $abbr{"$_ jn"} = "$_ john" } (1..3);
 
-#$abbr{"1 mosebok"} = "genesis";
-#$abbr{"2 mosebok"} = "exodus";
-#$abbr{"3 mosebok"} = "leviticus";
-#$abbr{"4 mosebok"} = "numeri";
-#$abbr{"5 mosebok"} = "deuteronomium";
 grep { $abbr{"$_ mosebok"} = "$_ mos" } ((1..5));
 grep { $abbr{"$_ mosbok"} = "$_ mos" } ((1..5));
 grep { $abbr{"$_ moseb"} = "$_ mos" } ((1..5));
@@ -224,14 +220,14 @@ foreach $bible (@bible) {
     # Trim any initial stuff (eg Project Gutenberg header):
     s/^.*?(Book \d\d)/$1/s;
   }
-  
+
   # Join up the verses to get one verse per line:
   s/\cM//g;
   s/\n+/\n/g;
   s!\n\s+!//!g; # Preserve line breaks in poetry
-  
+
   my @lines = split(/\n/, $_);
-  
+
   $n = "00";
   my %name = ();
   foreach (@lines) {
@@ -243,12 +239,12 @@ foreach $bible (@bible) {
       $_ = "$n:$_";
     }
   }
-  
+
   # Extract the required verse(s):
   if ($vpatt ne "") {
     @lines = grep { /^\d\d:$vpatt/ } @lines;
   }
-  
+
   foreach $patt (@patterns) {
     $pattern = $patt;
     if ($pattern =~ s!/(.*)/i$!$1!) {
@@ -262,35 +258,58 @@ foreach $bible (@bible) {
 
   $bible =~ s/^$bibles$ds//;
   print "$bible\n" if (@bible > 1);
-  
+
   $_ = join("\n", @lines);
   s/^\n+//;
   s!//!\n\t!g; # Restore line breaks in poetry
   @lines = split(/\n/, $_);
-  
-  my ($word, $left);
-  $n = "00";
-  foreach $_ (@lines) {
-    if (s/^(\d\d):// && $1 ne $n) {
-      print "$name{$1}\n";
-      $n = $1;
-    }
-    if (length($_) < $linelen) {
-      print "$_\n";
-    } else {
-      $left = $linelen;
-      while (s/^\s*([^\s]+\s*)//) {
-	$word = $1;
-	if (length($word) < $left) {
-	  print "$word";
-	  $left = $left - length($word);
-	} else {
-	  # add spaces in front of continuation lines
-	  print "\n\t$word";
-	  $left = $linelen - length($word) - 8;
-	}
+
+  # print multi line
+  if (1 == 0) {
+    my ($word, $left);
+    $n = "00";
+    foreach $_ (@lines) {
+      if (s/^(\d\d):// && $1 ne $n) {
+        # Print the book number and name
+        print "$name{$1}\n";
+        $n = $1;
       }
-      print "\n";
+      if (length($_) < $linelen) {
+        print "$_\n";
+      } else {
+        $left = $linelen;
+        while (s/^\s*([^\s]+\s*)//) {
+          $word = $1;
+          if (length($word) < $left) {
+            print "$word";
+            $left = $left - length($word);
+          } else {
+            # add spaces in front of continuation lines
+            print "\n\t$word";
+            $left = $linelen - length($word) - 8;
+          }
+        }
+        print "\n";
+      }
+    }
+  } else { # Print single line
+    my ($word, $left);
+    my $first = 1;
+    foreach $_ (@lines) {
+      if (s/^(\d\d)://) { # lines starts with digits
+        # Print the book number and name
+        if ($first == 1) {
+          print "$name{$1} ";
+          $first = 0
+        } else {
+          print "\n$name{$1} ";
+        }
+        s/\s/ /g;
+        print "$_";
+      } else {
+        s/\s/ /g;
+        print "$_";
+      }
     }
   }
 }
