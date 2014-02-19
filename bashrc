@@ -51,7 +51,7 @@ __path_if /usr/local/heroku/bin
 
 eval "$(rbenv init -)"
 
-# GIT  ------------------------------------------------------------------------------------------------------
+# GIT Topia  ------------------------------------------------------------------------------------------------------
 # Git completion, aliases, and prompt func
 # http://www.simplicidade.org/notes/archives/2008/02/git_bash_comple.html
 # http://benmabey.com/2008/05/07/git-bash-completion-git-aliases.html
@@ -65,8 +65,11 @@ complete -o default -o nospace -F _git_branch gb
 alias gbd='git branch -D'
 complete -o default -o nospace -F _git_branch gbd
 
-alias gc="git checkout "
-complete -o default -o nospace -F _git_checkout gc
+alias gcm="git cm "
+complete -o default -o nospace -F _git_commit gcm
+
+alias gco="git co "
+complete -o default -o nospace -F _git_checkout gco
 
 alias gx='git merge'
 complete -o default -o nospace -F _git_merge gx
@@ -78,6 +81,7 @@ alias gdl='git dl'
 
 alias gdc='git dc'
 
+alias gcam='git cam'
 alias gcb='git checkout -b'
 alias gm='git checkout master'
 alias gn='git clone'
@@ -85,14 +89,29 @@ alias gd="git d"
 alias gl="git l"
 alias gza='git rebase --abort'
 alias gs='git status'
-alias gp='git pull'
-alias gP='git push'
+alias gp='git push'
+alias gpl='git pull'
 
 gfzm ()
 {
   local branch=$(git branch |grep \* |cut -d\* -f2)
   git fetch && git rebase origin/master && git checkout $branch
 }
+
+# Ruby land
+alias Rc="rails c"
+alias Rs="rails s"
+alias b=bundle
+alias be="bundle exec"
+alias bek="bundle exec rake"
+alias berc="bundle exec rails c"
+alias bers="bundle exec rails s"
+alias bes="bundle exec rspec"
+alias bi='bundle install'
+alias irb=pry
+alias k=rake
+alias s=rspec
+alias z=rails
 
 # Alias City ------------------------------------------------------------------------------------------------------
 alias rcedit='vi ~/.bashrc'
@@ -101,18 +120,11 @@ alias rcdiff="cd /opt/dotfiles/repo; git diff HEAD ~/.bashrc"
 alias rcreload="source ~/.bashrc"
 alias vrcedit="vi ~/.vimrc"
 
-alias b=bundle
-alias be="bundle exec"
-alias bi='bundle install'
-alias irb=pry
 alias c=cd
 complete -o default -o nospace -F _cd c
 alias d="rm -rf"
 alias h="heroku"
-alias k=rake
 alias l="ls -G"
-alias s=rspec
-alias z=rails
 
 alias ls="ls -G "
 alias ll="ls -h -G -l "
