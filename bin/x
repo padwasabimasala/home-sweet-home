@@ -1,5 +1,5 @@
 #!/bin/bash
-GREP_EXCLUDE="--exclude-dir=log"
+GREP_EXCLUDE="--exclude-dir=log --exclude-dir=public --exclude-dir=tmp --exclude-dir=coverage"
 
 GREP_BASE="grep $GREP_EXCLUDE"
 
