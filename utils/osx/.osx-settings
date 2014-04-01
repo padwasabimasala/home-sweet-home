@@ -1,4 +1,6 @@
 # make spaces animation fast - http://superuser.com/questions/333872/how-do-i-disable-mac-os-x-spaces-animation
 defaults write com.apple.dock expose-animation-duration -int 0; killall Dock
+# disable accent popup on key repreat - http://osxdaily.com/2011/08/04/enable-key-repeat-mac-os-x-lion/
+defaults write -g ApplePressAndHoldEnabled -bool false
 
 
