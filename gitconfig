@@ -23,7 +23,7 @@
 
 [user]
 	name = Matthew Thorley
-	email = padwasabimasala@gmail
+	email = thorley@gmail
 [alias]
   # Edit this file quickly
   rcedit = "! /usr/bin/env vim ~/.gitconfig"
