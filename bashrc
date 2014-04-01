@@ -147,8 +147,6 @@ alias df="df -h " # df (mounts) human readable
 
 alias lsx="ls -al -G |grep -i"
 alias igrep='grep -i '
-alias psgrep="echo 'try psx'"
-alias psx="ps aux|grep -i"
 alias envx="env |grep -i"
 alias chmox="chmod +x"
 
@@ -158,6 +156,7 @@ alias ka=/usr/bin/killall
 alias killall='echo Try ka'
 alias k9="kill -9 "
 alias ka9="killall -9 "
+alias psx="ps aux|grep -i"
 alias psme='ps aux|grep `whoami`'
 alias clear="clear;echo [0m;"
 
@@ -172,6 +171,10 @@ alias h10='head -n10'
 
 function pidx() {
   ps aux |grep "$@" |grep -v grep |awk '{print $2}'
+}
+
+function killx() {
+  pidx "$@" |xargs kill
 }
 
 #alias jcurl='curl -H "Accept: application/json" -H "Content-type: application/json"'
