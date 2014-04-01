@@ -104,6 +104,7 @@ alias Rs="rails s"
 alias b=bundle
 alias be="bundle exec"
 alias bek="bundle exec rake"
+alias bekdbm="bundle exec rake db:migrate"
 alias berc="bundle exec rails c"
 alias bers="bundle exec rails s"
 alias bes="bundle exec rspec"
@@ -454,6 +455,26 @@ ftp-on() {
 ftp-off() {
   sudo -s launchctl unload -w /System/Library/LaunchDaemons/ftp.plist
 }
+
+# Redis
+#
+# To have launchd start redis at login:
+#     ln -sfv /usr/local/opt/redis/*.plist ~/Library/LaunchAgents
+# Then to load redis now:
+#     launchctl load ~/Library/LaunchAgents/homebrew.mxcl.redis.plist
+# Or, if you don't want/need launchctl, you can just run:
+#     redis-server /usr/local/etc/redis.conf
+
+alias redisup="redis-server /usr/local/etc/redis.conf"
+
+# RabbitMQ
+#
+# To have launchd start rabbitmq at login:
+#     ln -sfv /usr/local/opt/rabbitmq/*.plist ~/Library/LaunchAgents
+# Then to load rabbitmq now:
+#     launchctl load ~/Library/LaunchAgents/homebrew.mxcl.rabbitmq.plist
+# Or, if you don't want/need launchctl, you can just run:
+#     rabbitmq-server
 
 # Hrrrm this is getting overridden by something above so I moved it to the bottom
 __my_git_ps1 ()

@@ -311,6 +311,7 @@ foreach $bible (@bible) {
         print "$_";
       }
     }
+    print "\n"
   }
 }
 
