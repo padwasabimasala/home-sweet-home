@@ -148,7 +148,7 @@ alias df="df -h " # df (mounts) human readable
 alias lsx="ls -al -G |grep -i"
 alias igrep='grep -i '
 alias psgrep="echo 'try psx'"
-alias psx="ps aux|grep "
+alias psx="ps aux|grep -i"
 alias envx="env |grep -i"
 alias chmox="chmod +x"
 
