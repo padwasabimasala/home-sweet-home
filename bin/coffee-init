@@ -1,0 +1,47 @@
+#!/bin/bash
+
+init() {
+  mkdir $name
+  cd $name
+  echo "{\"name\": \"$name\"}" > package.json
+
+  npm install --save coffee-script
+}
+
+setup_tests() {
+  mkdir test
+  npm install --save-dev mocha should
+  echo "--require should
+  --ui bdd
+  --compilers coffee:coffee-script/register
+  --recursive" > test/mocha.opts
+}
+
+stub_app() {
+  echo "thing =
+name: 'redis-stack'
+
+module.exports = thing" > $name.coffee
+
+  echo "thing = require '../redis-stack'
+
+describe 'thing', ->
+  it 'has the name redis-stack', ->
+    thing.name.should.equal 'redis-stack'" > test/$name-test.coffee
+}
+
+main() {
+  init
+  setup_tests
+  stub_app
+}
+
+name=$1
+if test $# -ne 1; then
+  echo "Usage: $(basename $0) app-name" >&2
+  exit 1
+fi
+main
+
+
+
