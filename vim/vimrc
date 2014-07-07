@@ -83,22 +83,29 @@ hi Operator        guifg=#6699CC     guibg=NONE        gui=NONE      ctermfg=lig
 let mapleader=","
 
 " Let \ clear the search highlighting
-map <silent> \ :let @/=""<cr>
+noremap <silent> \ :let @/=""<cr>
 " Let H toggle highlighting
-map <silent> H :set hls!<CR>
+noremap <silent> H :set hls!<CR>
+
+" Capitalize word
+inoremap <c-U> <esc>he<c-v>bU
+
+" center screen on search terms
+nnoremap n nzz
+nnoremap N Nzz
 
 " remap j and k so that they move one screen line even when file lines wrap
 noremap j gj
 noremap k gk
 
-" Map jj to <Esc> during insert mode
-inoremap jj <Esc>
+" Map kj to <Esc> during insert mode
+inoremap kj <Esc>
 
 " Move windows quickly
-map <C-h> <C-w>h
-map <C-j> <C-w>j
-map <C-k> <C-w>k
-map <C-l> <C-w>l
+noremap <C-h> <C-w>h
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-l> <C-w>l
 
 " Save as root
 cmap w!! w !sudo tee % >/dev/null
@@ -107,16 +114,19 @@ cmap w!! w !sudo tee % >/dev/null
 " nnoremap ; :
 
 " Jump to matching brace with ease
-map [ %
+noremap [ %
 
 " Format into paragraphs with Q
-vmap Q gq
-nmap Q gqap
+vnoremap Q gq
+nnoremap Q gqap
+
+" replace word under cursor
+:nnoremap <Leader>s :%s/\<<C-r><C-w>\>/
 
 " Quickly edit/reload the vimrc file
-nmap <silent> <leader>ev :e $MYVIMRC<CR>
+nnoremap <silent> <leader>ev :e $MYVIMRC<CR>
 " TODO : make this work as :reload
-nmap <silent> <leader>sv :so $MYVIMRC<CR>
+nnoremap <silent> <leader>sv :so $MYVIMRC<CR>
 
 " rspec the current file
 " TODO make this find spec for current file if it is not spec
