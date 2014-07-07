@@ -433,10 +433,7 @@ ftp-off() {
 }
 
 __prompt_leader() {
-  printf "\033[;"
-  printf "${PROMPT_COLOR}m" # OK
-  printf "${PROMPT_CHAR}" # OK
-  printf " \033[0m"
+  printf "\033[;${PROMPT_COLOR}m${PROMPT_CHAR} \033[0m"
 }
 
 __set_prompt_char_and_color() {
