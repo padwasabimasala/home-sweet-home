@@ -1,13 +1,8 @@
 # ENV ------------------------------------------------------------------------------------------------------
-export PATH=".:./bin:~/bin:./var:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
 export TERM=xterm-256color
 export EDITOR=vim
-export CDPATH=".:..:~/:~/src"
-export PYTHONPATH=".:..:$PYTHONPATH"
-export PYTHONSTARTUP="$HOME/.pythonrc.py"
-export AUTH_FILE=~/.auth
-export GOPATH=~/.go
-
+export CDPATH="./:~/src"
+export PATH=".:./bin:~/bin:./var:$GOPATH/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin"
 # History configuration
 # http://www.catonmat.net/blog/the-definitive-guide-to-bash-command-line-history/
 # http://www.oreillynet.com/onlamp/blog/2007/01/whats_in_your_bash_history.html
@@ -18,13 +13,18 @@ export HISTFILESIZE=1000000
 export HISTSIZE=1000000
 export HISTCONTROL=ignoreboth # dupes and leading space
 export HISTTIMEFORMAT="%F %T " # Timestamp history
+# -a Append the new history lines (history lines entered since the beginning of the current Bash session) to the history file.
+# -c Clear the history list. This may be combined with the other options to replace the history list completely.
+# -r Read the current history file and append its contents to the history list.
+# -n (sync history of other shells)  Append the history lines not already read from the history file to the current history list. These are lines appended to the history file since the beginning of the current Bash session.
 export PROMPT_COMMAND="history -a; history -c; history -r"
-alias hist-sync="history -n"
-alias hist-report="cut -f1,2 -d\" \" ~/.bash_history | sort | uniq -c | sort -nr | head -n 30"
+export PYTHONPATH=".:..:$PYTHONPATH"
+export PYTHONSTARTUP="$HOME/.pythonrc.py"
+export AUTH_FILE=~/.auth
+export GOPATH=~/src/go
 
 source ~/.titlebar
 source ~/.dircolors
-source ~/.rake-completion.bash
 
 __source_if() {
 	if [ -e $1 ]; then
@@ -38,15 +38,15 @@ __path_if() {
 	fi
 }
 
-__source_if `brew --repository`/Library/Contributions/brew_bash_completion.sh
-__source_if /usr/local/etc/bash_completion
+__source_if ~/.rake-completion.bash
+__source_if ~/.npm-completion.bash
+__source_if /usr/local/share/bash-completion/bash_completion
 __source_if ~/.nvm/nvm.sh
 __source_if ~/.env
 __source_if ~/.ntpapirc
+__source_if ~/.octanner
 
-__path_if /usr/local/share/npm/bin
 __path_if ~/vendor/play-2.2.1
-__path_if /usr/local/share/python # livereload
 __path_if /usr/local/heroku/bin
 
 eval "$(rbenv init -)"
@@ -71,6 +71,9 @@ complete -o default -o nospace -F _git_commit gcm
 alias gco="git co "
 complete -o default -o nospace -F _git_checkout gco
 
+alias gp='git push'
+complete -o default -o nospace -F _git_push gp
+
 alias gx='git merge'
 complete -o default -o nospace -F _git_merge gx
 
@@ -78,18 +81,21 @@ alias gz='git rebase'
 complete -o default -o nospace -F _git_rebase gz
 
 alias gdl='git dl'
-
 alias gdc='git dc'
-
 alias gcam='git cam'
 alias gcb='git checkout -b'
 alias gm='git checkout master'
+alias grhm='git rh && git checkout master'
 alias gn='git clone'
 alias gd="git d"
 alias gl="git l"
+alias gll="git ll"
 alias gza='git rebase --abort'
 alias gs='git status'
 alias gp='git push'
+alias gphm='git push heroku master'
+alias gpom='git push origin master'
+alias gppm='git push prod master'
 alias gpl='git pull'
 
 gfzm ()
@@ -104,7 +110,8 @@ alias Rs="rails s"
 alias b=bundle
 alias be="bundle exec"
 alias bek="bundle exec rake"
-alias bekdbm="bundle exec rake db:migrate"
+alias bekdm="bundle exec rake db:migrate"
+alias ber="bundle exec rails"
 alias berc="bundle exec rails c"
 alias bers="bundle exec rails s"
 alias bes="bundle exec rspec"
@@ -112,21 +119,24 @@ alias bi='bundle install'
 alias irb=pry
 alias k=rake
 alias s=rspec
-alias z=rails
 
 # Alias City ------------------------------------------------------------------------------------------------------
 alias rcedit='vi ~/.bashrc'
 alias rccommit='cd /opt/dotfiles/repo; git add bashrc; git commit bashrc; cd -'
 alias rcdiff="cd /opt/dotfiles/repo; git diff HEAD ~/.bashrc"
 alias rcreload="source ~/.bashrc"
-alias vrcedit="vi ~/.vimrc"
+alias vimrc="vi ~/.vimrc"
+alias gitrc="vi ~/.gitconfig"
+alias history-sync="history -n"
+alias history-report="cut -f1,2 -d\" \" ~/.bash_history | sort | uniq -c | sort -nr | head -n 30"
 
 alias c=cd
 complete -o default -o nospace -F _cd c
 alias d="rm -rf"
 alias h="heroku"
-alias l="ls -G"
+alias L=less
 
+alias l="ls -G"
 alias ls="ls -G "
 alias ll="ls -h -G -l "
 alias lla="ls -h -G -Al "
@@ -166,8 +176,14 @@ alias wl='wc -l'
 alias h1='head -n1'
 alias h10='head -n10'
 
+if [[ $(which src-hilite-lesspipe.sh) ]]; then alias cat="src-hilite-lesspipe.sh"; fi
+
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Functions
+
+function last-migration() {
+  vim db/migrate/$(ls db/migrate/ |tail -n1)
+}
 
 function pidx() {
   ps aux |grep "$@" |grep -v grep |awk '{print $2}'
@@ -177,49 +193,12 @@ function killx() {
   pidx "$@" |xargs kill
 }
 
-#alias jcurl='curl -H "Accept: application/json" -H "Content-type: application/json"'
 jcurl() {
   curl_cmd="curl -H \"Accept: application/json\" -H \"Content-type: application/json\" $@"
   if test -n "$DEBUG"; then
     echo "Running: $curl_cmd"
   fi
   eval "$curl_cmd"
-}
-
-oct-api-curl () {
-  # Usage
-  if test -n "$DEBUG"; then
-    echo "Ussge: oct-api-curl resource [app] [curl opts]" 1>&2
-    echo "   $ oct-api-curl people/11 -v" 1>&2
-    echo "   $ oct-api-curl people/11 app-name -v" 1>&2
-  fi
-
-  resource=$1
-  shift
-
-  app=$1
-  # Assune env prod if app is empty or begins with - (dash)
-  if test -z $app || test ${app:0:1} = '-'; then
-    app=https://api.thanks.com
-    oct-api-auth
-  # Otherwise env test
-  else
-    if test "$app" == "test"; then
-      app="oc-api-test"
-    fi
-    app=https://$app.herokuapp.com
-    shift
-    oct-api-auth "test"
-  fi
-
-  token="$OCTANNER_AUTH_TOKEN"
-
-  jcurl -H \"Authorization: Token token=$token\" $app/$resource $@
-}
-
-oct-api-auth () {
-  token=$(eve-token $1)
-  export OCTANNER_AUTH_TOKEN=$token
 }
 
 heroku-db() {
@@ -250,16 +229,13 @@ heroku-db() {
   echo name : $name
 }
 
-if [[ $(which src-hilite-lesspipe.sh) ]]; then alias cat="src-hilite-lesspipe.sh"; fi
-
 function goog {
   url="http://www.google.com/search?hl=en&source=hp&q=$@&aq=f&aqi=g5&aql=&oq="
   w3m "$url"
 }
 
 function app {
-  #http://www.hccp.org/command-line-os-x.html
-  open -a /Applications/$1.app $2
+  open -a /Applications/$1.app $2 #http://www.hccp.org/command-line-os-x.html
 }
 
 function prepend {
@@ -311,7 +287,7 @@ function backmv
 	fi
 }
 
-function tar-quick {
+function tarq {
   tar czf "$1.tgz" $1
 }
 
@@ -389,11 +365,9 @@ function cleanup {
   find ./ -name '.**.swo' -exec rm {} +
 }
 
-# Open a new terminal (gnome)
 function newterm {
   nohup gnome-terminal --hide-menubar 2>&1>/dev/null
 }
-alias nt=newterm
 
 # http://machine-cycle.blogspot.com/2007/10/syntax-highlighting-pager.html
 if [[ -s /usr/share/vim/vim73/macros/less.sh ]]; then
@@ -450,7 +424,6 @@ function todo {
 }
 
 # http://mac-user-blog.blogspot.com/2012/08/enabling-ftp-on-with-mountain-lion.html
-
 ftp-on() {
   sudo -s launchctl load -w /System/Library/LaunchDaemons/ftp.plist
 }
@@ -459,28 +432,34 @@ ftp-off() {
   sudo -s launchctl unload -w /System/Library/LaunchDaemons/ftp.plist
 }
 
-# Redis
-#
-# To have launchd start redis at login:
-#     ln -sfv /usr/local/opt/redis/*.plist ~/Library/LaunchAgents
-# Then to load redis now:
-#     launchctl load ~/Library/LaunchAgents/homebrew.mxcl.redis.plist
-# Or, if you don't want/need launchctl, you can just run:
-#     redis-server /usr/local/etc/redis.conf
+__prompt_leader() {
+  printf "\033[;"
+  printf "${PROMPT_COLOR}m" # OK
+  printf "${PROMPT_CHAR}" # OK
+  printf " \033[0m"
+}
 
-alias redisup="redis-server /usr/local/etc/redis.conf"
+__set_prompt_char_and_color() {
+  local last_retval="$?"
+  __rotate_prompt_color
+  __set_prompt_char $last_retval
+}
 
-# RabbitMQ
-#
-# To have launchd start rabbitmq at login:
-#     ln -sfv /usr/local/opt/rabbitmq/*.plist ~/Library/LaunchAgents
-# Then to load rabbitmq now:
-#     launchctl load ~/Library/LaunchAgents/homebrew.mxcl.rabbitmq.plist
-# Or, if you don't want/need launchctl, you can just run:
-#     rabbitmq-server
+__rotate_prompt_color() { # Color rotation credit https://bbs.archlinux.org/viewtopic.php?id=109234
+  local colors=("0;30" "1;30" "0;37" "1;37" "1;36" "0;36" "1;32" "0;32" "0;34" "1;34" "0;35" "1;35" "1;31" "0;31" "0;33" "1;33")
+  PROMPT_COLOR=${colors[$((++PROMPT_COLOR_IDX % 16))]}
+}
 
-# Hrrrm this is getting overridden by something above so I moved it to the bottom
-__my_git_ps1 ()
+__set_prompt_char() {
+  local last_retval=$1
+  PROMPT_CHAR="✧"
+  if test $last_retval != 0; then
+    PROMPT_CHAR="-!-"
+    PROMPT_COLOR="0;31"
+  fi
+}
+
+__prompt_git_info()
 {
   local b="$(git reflog 2> /dev/null |grep checkout: |head -n1 |awk '{print $8}' 2> /dev/null)"
   local local_changes="$(git diff --numstat 2> /dev/null |wc -l)"
@@ -500,38 +479,8 @@ __my_git_ps1 ()
   fi
 }
 
-# https://bbs.archlinux.org/viewtopic.php?id=109234
-
-__my_next_hue() {
-  colors=("0;30" "1;30" "0;37" "1;37" "1;36" "0;36" "1;32" "0;32" "0;34" "1;34" "0;35" "1;35" "1;31" "0;31" "0;33" "1;33")
-  __prompt_color=${colors[$((++__prompt_color_idx % 16))]}
-}
-
-__my_check_err() {
-  local last_retval=$1
-  __prompt_char="✧"
-  if test $last_retval != 0; then
-    __prompt_char="-!-"
-    __prompt_color="0;31"
-  fi
-}
-
-__my_prompt_leader() {
-  printf "\033[0;${__prompt_color}m${__prompt_char} \033[0m"
-}
-
-__my_prompt_command() {
-  local last_retval="$?"
-  history -a; history -n; history -c; history -r;
-  __my_next_hue
-  __my_check_err $last_retval
-}
-
-PS1='$(__my_prompt_leader)\u@\h \W$(__my_git_ps1) '
-export PS1
-export PROMPT_COMMAND="__my_prompt_command; $PROMPT_COMMAND"
-
-# Perfect (ntp installer) setup
-export PATH=$PATH:/Users/matthew.thorley/src/perfect/bin
-alias p='source /Users/matthew.thorley/src/perfect/bin/perfect'
+export PROMPT_COMMAND="__set_prompt_char_and_color; $PROMPT_COMMAND"
+export PS1='\[$(__prompt_leader)\]\u@\h \W$(__prompt_git_info) '
 export PATH=$PATH:~/src/ci-shortcut
+export PATH=$PATH:/Users/matthew.thorley/.perfect/bin
+alias perfect='source /Users/matthew.thorley/.perfect/bin/perfect'
