@@ -19,15 +19,15 @@ setup_tests() {
 
 stub_app() {
   echo "thing =
-name: 'redis-stack'
+name: '$name'
 
 module.exports = thing" > $name.coffee
 
-  echo "thing = require '../redis-stack'
+  echo "thing = require '../$name'
 
 describe 'thing', ->
-  it 'has the name redis-stack', ->
-    thing.name.should.equal 'redis-stack'" > test/$name-test.coffee
+  it 'has the name $name', ->
+    thing.name.should.equal '$name'" > test/$name-test.coffee
 }
 
 main() {
