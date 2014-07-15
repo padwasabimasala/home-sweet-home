@@ -1,2 +1,7 @@
 #\!/bin/bash
-git $@
+
+if test $# -gt 0; then
+  git $@ && exit
+fi
+
+git d && git status
