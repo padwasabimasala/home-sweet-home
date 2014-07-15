@@ -46,6 +46,7 @@ __source_if ~/.env
 __source_if ~/.ntpapirc
 __source_if ~/.octanner
 
+__path_if ~/vendor/activate-1.2.3
 __path_if ~/vendor/play-2.2.1
 __path_if /usr/local/heroku/bin
 
@@ -136,7 +137,7 @@ alias d="rm -rf"
 alias h="heroku"
 alias L=less
 
-alias l="ls -G"
+alias l="ls -oaG"
 alias ls="ls -G "
 alias ll="ls -h -G -l "
 alias lla="ls -h -G -Al "
@@ -479,5 +480,5 @@ __prompt_git_info()
 export PROMPT_COMMAND="__set_prompt_char_and_color; $PROMPT_COMMAND"
 export PS1='\[$(__prompt_leader)\]\u@\h \W$(__prompt_git_info) '
 export PATH=$PATH:~/src/ci-shortcut
-export PATH=$PATH:/Users/matthew.thorley/.perfect/bin
-alias perfect='source /Users/matthew.thorley/.perfect/bin/perfect'
+export PATH=$PATH:/Users/matthew.thorley/src/perfect/bin
+alias p='source /Users/matthew.thorley/src/perfect/bin/perfect'
