@@ -40,7 +40,7 @@ __path_if() {
 
 __source_if ~/.rake-completion.bash
 __source_if ~/.npm-completion.bash
-__source_if /usr/local/share/bash-completion/bash_completion
+#__source_if /usr/local/share/bash-completion/bash_completion - something broke this :/
 __source_if ~/.nvm/nvm.sh
 __source_if ~/.env
 __source_if ~/.ntpapirc
@@ -52,6 +52,9 @@ __path_if /usr/local/heroku/bin
 
 eval "$(rbenv init -)"
 
+function v() {
+  vim -o"$#" "$@"
+}
 # GIT Topia  ------------------------------------------------------------------------------------------------------
 # Git completion, aliases, and prompt func
 # http://www.simplicidade.org/notes/archives/2008/02/git_bash_comple.html
@@ -134,8 +137,8 @@ alias history-report="cut -f1,2 -d\" \" ~/.bash_history | sort | uniq -c | sort 
 alias c=cd
 complete -o default -o nospace -F _cd c
 alias d="rm -rf"
-alias h="heroku"
 alias L=less
+alias a=activator
 
 alias l="ls -oaG"
 alias ls="ls -G "
@@ -201,6 +204,28 @@ jcurl() {
   fi
   eval "$curl_cmd"
 }
+
+h() {
+  if test $# -eq 0; then
+    heroku
+  else
+    firstArg=$1
+    shift
+    if test ${#firstArg} -eq 1; then
+      echo $firstArg
+      for remote in $(git remotes |cut -f1 |uniq); do
+        echo $remote
+        if test $firstArg = ${remote:0:1}; then
+          echo ${remote:0:1}
+          echo heroku $remote $@ --account work
+        fi
+      done
+      echo 1
+    fi
+    heroku $@ --account work
+  fi
+}
+
 
 heroku-db() {
   app=$1
@@ -358,6 +383,22 @@ function watch_processes {
 }
 alias wp="watch_processes"
 
+function watch() {
+  if [[ $# -lt 1 || $# -gt 2 ]]; then
+    echo "Usage: watch 'cmd' [path]" 1>&2
+    return 1
+  fi
+
+  cmd="$1"
+  path="."
+  if [[ $# -eq 2 ]]; then
+    path=$2
+  fi
+  fswatch -o $path |xargs -n1 -I{} $cmd
+}
+
+
+
 
 # Remove log, tmp, bak files
 function cleanup {
@@ -415,9 +456,33 @@ function auth {
 }
 
 function clone {
+  if [ $# -eq 2 ]; then
+    local org=$1
+    local repo=$2
+  elif [ $# -eq 1 ]; then
+    local org=octanner
+    local repo=$1
+  else
+    echo "Usage: clone [org] repo" >&2
+    return 1
+  fi
+
   cd ~/src
-  git clone git@github.com:$1/$2.git
+  git clone git@github.com:$org/$repo.git
   cd $2
+}
+
+function clone-heroku {
+  if [ $# -eq 1 ]; then
+    local app=$1
+  else
+    echo "Usage: clone-heroku app" >&2
+    return 1
+  fi
+
+  cd ~/src
+  git clone git@heroku.work:$app.git
+  cd $app
 }
 
 function todo {
@@ -431,6 +496,10 @@ ftp-on() {
 
 ftp-off() {
   sudo -s launchctl unload -w /System/Library/LaunchDaemons/ftp.plist
+}
+
+eccTopicSearch() {
+  ref ecc |cut -d' ' -f5- |tr ' ' '\n' |sed 's/[,\.";?]//g' | tr [:upper:] [:lower:] |sed -E 's/^(and|the|to|is|of|a|in|i|that|not|who|he|for|his|all|man|it|has|will|are|your|be|with|him|you|what|than|there|my|but|also|have|this|one|no|they|from|them|or|was|after|do|on|does|so|an|And|as|better|done|before|by|many|nor)$//g' |sort  |uniq -c |sort -nr |head -n25
 }
 
 __prompt_leader() {
@@ -476,9 +545,25 @@ __prompt_git_info()
     printf " (\033[$color$b\033[0m)"
   fi
 }
+#
+# To test CouchDB run:
+#     curl http://127.0.0.1:5984/
+#
+# The reply should look like:
+#     {"couchdb":"Welcome","uuid":"....","version":"1.6.1","vendor":{"version":"1.6.1-1","name":"Homebrew"}}
+#
+# To have launchd start couchdb at login:
+#     ln -sfv /usr/local/opt/couchdb/*.plist ~/Library/LaunchAgents
+# Then to load couchdb now:
+#     launchctl load ~/Library/LaunchAgents/homebrew.mxcl.couchdb.plist
+# Or, if you don't want/need launchctl, you can just run:
+#     couchdb
 
-export PROMPT_COMMAND="__set_prompt_char_and_color; $PROMPT_COMMAND"
-export PS1='\[$(__prompt_leader)\]\u@\h \W$(__prompt_git_info) '
+# export PROMPT_COMMAND="__set_prompt_char_and_color; $PROMPT_COMMAND"
+# export PS1='\[$(__prompt_leader)\]\u@\h \W$(__prompt_git_info) '
 export PATH=$PATH:~/src/ci-shortcut
 export PATH=$PATH:/Users/matthew.thorley/src/perfect/bin
 alias p='source /Users/matthew.thorley/src/perfect/bin/perfect'
+
+export PATH=/Users/matthew.thorley/erl/otp_src_17.4/bin:$PATH
+export PATH=/Users/matthew.thorley/erl/elixir/bin:$PATH

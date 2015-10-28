@@ -2,8 +2,8 @@
 # - http://github.com/ryanb/dotfiles/blob/master/irbrc
 # - http://github.com/logankoester/irbrc/blob/master/irbrc
 # - http://github.com/greatseth/dotfiles/blob/master/irbrc
-
 require 'rubygems'
+require 'interactive_editor'
 require 'irb/completion'
 require 'irb/ext/save-history' rescue nil
 require 'ap'
@@ -12,9 +12,6 @@ IRB.conf[:SAVE_HISTORY] = 1000
 IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb_history"
 IRB.conf[:PROMPT_MODE] = :SIMPLE
 IRB.conf[:AUTO_INDENT] = true
-
-# Wirble.init
-# Wirble.colorize
 
 class Object
   def my_methods
@@ -30,4 +27,12 @@ end
 
 def dir(obj)
   (obj.methods - Object.public_instance_methods).sort
+end
+
+begin
+    require "pry"
+      Pry.start
+        exit
+rescue LoadError => e
+    warn "=> Unable to load pry"
 end

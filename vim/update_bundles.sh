@@ -14,6 +14,8 @@ get_bundle() {
 
 mkdir -p $BUNDLE_DIR
 cd $BUNDLE_DIR
+get_bundle vimerl jimenezrick
+get_bundle vim-elixir elixir-lang
 get_bundle vim-coffee-script kchmck
 get_bundle vim-irblack wgibbs  # ir_black color scheme
 get_bundle vim-vividchalk tpope # Color scheme

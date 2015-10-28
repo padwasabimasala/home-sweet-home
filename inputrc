@@ -1,9 +1,14 @@
-# editing mode is enough, don't set keymap
-#set keymap vi
+#set keymap vi # editing mode is enough, don't set keymap
+#set editing-mode vi
 set bell-style off
 set show-all-if-ambiguous on
-set editing-mode vi
 set completion-ignore-case on
-"\e[A": history-search-backward
-"\e[B": history-search-forward
-TAB: menu-complete
+
+# up arrow searaches history forward
+# "\e[A": history-search-backward
+# up arrow searaches history forward
+# "\e[B": history-search-forward
+
+#TAB: menu-complete
+# Shift-TAB cycles completions backward
+#"\e[Z": menu-complete-backward

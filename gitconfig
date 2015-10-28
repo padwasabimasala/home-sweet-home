@@ -61,6 +61,8 @@
   merge-last-two-commits = "!msg=$(git log -n1 --pretty=oneline --abbrev-commit |cut -d' ' -f2-) && git reset --soft HEAD~2 && git commit -am \"$msg\""
 
   # Diffing
+  d = diff --color
+  dm = diff --color master
   diff-cached = diff --color --cached
   dc = diff --color --cached
   diff-last = diff --color HEAD~1
